@@ -55,7 +55,7 @@ class PacketFileProcessing:
 		self._sat[station_name] = Satellite()
 		self._sat[station_name].set_observer(station.lnglat, station.elevation)
 		if self._verbose:
-			print('%s' % (station_name), file=sys.stderr)
+			print('%s: Station added!' % (station_name), file=sys.stderr)
 
 	def list_stations(self):
 		""" list_stations """
@@ -103,6 +103,8 @@ class PacketFileProcessing:
 			print('')
 
 	def plot_packets(self):
+		if len(self._stations) == 0:
+			raise ValueError('Plot not available because no stations added')
 		plot = PolarAntennaMap()
 		for station_name in self._stations.keys():
 			plot.add_packets(station_name, self._packets[station_name])

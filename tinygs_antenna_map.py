@@ -67,6 +67,9 @@ def tinygs_antenna_map(args):
 	else:
 		pfp.add_all_stations()
 
+	if len(pfp.list_stations()) == 0:
+			sys.exit('%s: No stations found' % ('tinygs_antenna_map'))
+
 	for station_name in pfp.list_stations():
 		pfp.process_packets(station_name)
 
