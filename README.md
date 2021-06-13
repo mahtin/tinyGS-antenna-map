@@ -1,5 +1,5 @@
 # tinyGS-antenna-map
-This is the antenna performance plotted from tinyGS reception data 
+This is the antenna performance plotted from [tinyGS](https://tinygs.com) reception data. See their [repository](https://github.com/G4lile0/tinyGS).
 
 ![W6LHI 433Mhhz 2](/doc/images/W6LHI_433Mhz_2.png?raw=true "W6LHI 433Mhhz 2")
 
