@@ -41,3 +41,9 @@ All your stations will be plotted on a single page. Make the displayed page larg
 $ ./tinygs_antenna_map.py
 ```
 
+### Optional TLE data from tinyGS
+Should there be more satellites than are build into `satellite.py` file, then the following could help:
+```
+$ curl -sSLR https://api.tinygs.com/v1/tinygs_supported.txt > tinygs_supported.txt
+$
+```
