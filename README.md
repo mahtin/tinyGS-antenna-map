@@ -1,7 +1,7 @@
 # tinyGS-antenna-map
 This is the antenna performance plotted from tinyGS reception data 
 
-![W6LHI 433Mhhz 2](/doc/images/W6LHI_433Mhz_2.png.jpg?raw=true "W6LHI 433Mhhz 2")
+![W6LHI 433Mhhz 2](/doc/images/W6LHI_433Mhz_2.png?raw=true "W6LHI 433Mhhz 2")
 
 ## Install
 
