@@ -76,7 +76,12 @@ class PolarAntennaMap:
 		""" _process """
 
 		# N plots needed
-		self._fig, self._axs = plt.subplots(1, len(self._stations), sharex=False, sharey=False, subplot_kw=dict(projection='polar'))
+		if len(self._stations) == 1:
+			self._fig, self._axs = plt.subplots(1, len(self._stations), sharex=False, sharey=False, subplot_kw=dict(projection='polar'))
+			# Somewhere in the docs it says use squeeze - but that didn't work
+			self._axs = [self._axs]
+		else:
+			self._fig, self._axs = plt.subplots(1, len(self._stations), sharex=False, sharey=False, subplot_kw=dict(projection='polar'))
 
 		n = 0
 		for station_name in sorted(self._stations):
