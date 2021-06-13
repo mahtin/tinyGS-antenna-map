@@ -95,12 +95,11 @@ class PacketFileProcessing:
 					print('%s\t%s\t%s\t%d:%s\t%-14s %5.1f ; %s' % (station_name, packet.ident, packet.dt.replace(microsecond=0).isoformat(), packet.norad, packet.satellite, packet.lnglat, packet.elevation, packet.azel), file=sys.stderr)
 				else:
 					print('%s\t%s\t%s\t%d:%s\t%-14s %5.1f ; %s CRC-ERROR' % (station_name, packet.ident, packet.dt.replace(microsecond=0).isoformat(), packet.norad, packet.satellite, packet.lnglat, packet.elevation, packet.azel), file=sys.stderr)
-			if packet.parsed:
-				print('%s: %s @ %s' % (station_name, packet.satellite, packet.azel))
 			else:
-				print('%s: %s @ %s CRC-ERROR' % (station_name, packet.satellite, packet.azel))
-		if self._verbose:
-			print('')
+				if packet.parsed:
+					print('%s: %s @ %s' % (station_name, packet.satellite, packet.azel))
+				else:
+					print('%s: %s @ %s CRC-ERROR' % (station_name, packet.satellite, packet.azel))
 
 	def plot_packets(self):
 		if len(self._stations) == 0:
