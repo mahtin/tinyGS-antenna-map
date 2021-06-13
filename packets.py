@@ -101,13 +101,21 @@ class PacketFileProcessing:
 				else:
 					print('%s: %s @ %s CRC-ERROR' % (station_name, packet.satellite, packet.azel))
 
+	def file_packets(self, fd=sys.stdout.buffer, file_format='png'):
+		plot = self._plot_packets()
+		plot.output(fd, file_format)
+
 	def plot_packets(self):
+		plot = self._plot_packets()
+		plot.display()
+
+	def _plot_packets(self):
 		if len(self._stations) == 0:
 			raise ValueError('Plot not available because no stations added')
 		plot = PolarAntennaMap()
 		for station_name in self._stations.keys():
 			plot.add_packets(station_name, self._packets[station_name])
-		plot.display()
+		return plot
 
 	def _read_packets(self, station_name, packets):
 		""" _read_packets """

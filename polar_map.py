@@ -66,11 +66,11 @@ class PolarAntennaMap:
 			self._processed = True
 		plt.show()
 
-	def output(self, fd, format='png'):
+	def output(self, fd, file_format='png'):
 		if not self._processed:
 			self._process()
 			self._processed = True
-		plt.savefig(fd, dpi=72, transparent=True, format=format)
+		plt.savefig(fd, dpi=150, transparent=False, format=file_format)
 
 	def _process(self):
 		""" _process """

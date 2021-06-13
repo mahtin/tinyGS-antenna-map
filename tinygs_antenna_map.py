@@ -19,6 +19,7 @@ def tinygs_antenna_map(args):
 	refresh_data = False
 	station_name = None
 	user_id = None
+	output_flag = False
 
 	usage = ('usage: tinygs_antenna_map '
 			+ '[-v|--verbose] '
@@ -29,7 +30,7 @@ def tinygs_antenna_map(args):
 			)
 
 	try:
-		opts, args = getopt.getopt(args, 'vhrs:u:', ['verbose', 'help', 'refresh', 'station=', 'user='])
+		opts, args = getopt.getopt(args, 'vhrs:u:o', ['verbose', 'help', 'refresh', 'station=', 'user=', 'output'])
 	except getopt.GetoptError:
 		sys.exit(usage)
 
@@ -44,6 +45,8 @@ def tinygs_antenna_map(args):
 			station_name = arg
 		elif opt in ('-u', '--user'):
 			user_id = arg
+		elif opt in ('-o', '--output'):
+			output_flag = True
 		else:
 			sys.exit(usage)
 
@@ -80,7 +83,10 @@ def tinygs_antenna_map(args):
 			#	pass
 			pfp.print_packets(station_name)
 
-	pfp.plot_packets()
+	if output_flag:
+		pfp.file_packets()
+	else:
+		pfp.plot_packets()
 	sys.exit(0)
 
 def main(args=None):
