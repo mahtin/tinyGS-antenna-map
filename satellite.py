@@ -11,6 +11,7 @@
 	lnglat, elevation, azel = sat.get_where()
 """
 
+import sys
 import math
 import datetime
 
@@ -104,17 +105,21 @@ class Satellite:
 	def _read_tle(self):
 		""" read the TLE's in """
 
-		# Saved away from https://api.tinygs.com/v1/tinygs_supported.txt
-		with open(Satellite._tle_filename, 'r') as fd:
-			n = 0
-			l = ['', '', '']
-			for line in fd.readlines():
-				l[n] = line.strip()
-				if n == 2:
-					satellite_name = l[0]
-					line1 = l[1]
-					line2 = l[2]
-					norad = str(line1[2:7])		# https://www.celestrak.com/NORAD/documentation/tle-fmt.php
-					Satellite._tle[satellite_name] = TLE(norad, satellite_name, line1, line2)
-				n = (n + 1) % 3
+		try:
+			# Saved away from https://api.tinygs.com/v1/tinygs_supported.txt
+			with open(Satellite._tle_filename, 'r') as fd:
+				n = 0
+				l = ['', '', '']
+				for line in fd.readlines():
+					l[n] = line.strip()
+					if n == 2:
+						satellite_name = l[0]
+						line1 = l[1]
+						line2 = l[2]
+						norad = str(line1[2:7])		# https://www.celestrak.com/NORAD/documentation/tle-fmt.php
+						Satellite._tle[satellite_name] = TLE(norad, satellite_name, line1, line2)
+					n = (n + 1) % 3
+
+		except FileNotFoundError as e:
+			print('%s: %s - WILL CONTINUE ANYWAY' % (Satellite._tle_filename, e), file=sys.stderr)
 

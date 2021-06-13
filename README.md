@@ -44,6 +44,8 @@ $ ./tinygs_antenna_map.py
 ### Optional TLE data from tinyGS
 Should there be more satellites than are build into `satellite.py` file, then the following could help:
 ```
-$ curl -sSLR https://api.tinygs.com/v1/tinygs_supported.txt > tinygs_supported.txt
+$ curl -sSLR https://api.tinygs.com/v1/tinygs_supported.txt > data/tinygs_supported.txt
 $
 ```
+In fact, this file should be updated semi-often as the TLE's for the satellite do change over time. The code will continue if this file is missing.
+
