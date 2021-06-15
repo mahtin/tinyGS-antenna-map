@@ -12,6 +12,15 @@ $ pip3 install -U `cat requirements`
 $
 ```
 
+if you see the following error ...
+```
+RuntimeError: module compiled against API version 0xe but this version of numpy is 0xd
+```
+... it's a case of `Matplotlib` and `numby` being out of sync. Make sure both are updated via the `pip3` command above.
+See https://github.com/numpy/numpy/issues/655 & https://github.com/matplotlib/matplotlib/issues/10135 & https://stackoverflow.com/questions/48054531/runtimeerror-module-compiled-against-api-version-0xc-but-this-version-of-numpy etc etc.
+
+## Executable
+
 Also make the `tinygs_antenna_map.py` file executable.
 ```
 $ chmod +x tinygs_antenna_map.py
@@ -41,12 +50,14 @@ $
 This will create a `data` directory and start populating it with station packet data.
 
 ## Plotting your antenna map
+
 All your stations will be plotted on a single page. Make the displayed page larger if you need.
 ```
 $ ./tinygs_antenna_map.py
 ```
 
-### Optional TLE data from tinyGS
+## Optional TLE data from tinyGS
+
 Should there be more satellites than are build into `satellite.py` file, then the following could help:
 ```
 $ curl -sSLR https://api.tinygs.com/v1/tinygs_supported.txt > data/tinygs_supported.txt
