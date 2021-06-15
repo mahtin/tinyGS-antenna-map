@@ -20,11 +20,7 @@ class PolarAntennaMap:
 	dot_size = 1.0
 
 	def __init__(self):
-		# https://matplotlib.org/stable/gallery/style_sheets/style_sheets_reference.html
-		plt.style.use('classic')
-
-		# https://matplotlib.org/stable/gallery/color/colormap_reference.html
-		self._cmap = plt.cm.OrRd
+		""" PolarAntennaMap """
 
 		self._stations = []
 		self._packets = {}
@@ -75,13 +71,17 @@ class PolarAntennaMap:
 	def _process(self):
 		""" _process """
 
+		# https://matplotlib.org/stable/gallery/style_sheets/style_sheets_reference.html
+		plt.style.use('classic')
+
+		# https://matplotlib.org/stable/gallery/color/colormap_reference.html
+		self._cmap = plt.cm.OrRd
+
 		# N plots needed
+		self._fig, self._axs = plt.subplots(1, len(self._stations), sharex=False, sharey=False, subplot_kw=dict(projection='polar'))
 		if len(self._stations) == 1:
-			self._fig, self._axs = plt.subplots(1, len(self._stations), sharex=False, sharey=False, subplot_kw=dict(projection='polar'))
 			# Somewhere in the docs it says use squeeze - but that didn't work
 			self._axs = [self._axs]
-		else:
-			self._fig, self._axs = plt.subplots(1, len(self._stations), sharex=False, sharey=False, subplot_kw=dict(projection='polar'))
 
 		n = 0
 		for station_name in sorted(self._stations):
@@ -93,6 +93,12 @@ class PolarAntennaMap:
 
 			self._plot(n, station_name, n_packets, max_v)
 			n += 1
+
+		# XXX - this slows down Matplotlib a lot - need to find out how to not use it!
+		# https://github.com/matplotlib/matplotlib/issues/16550
+		# https://matplotlib.org/stable/tutorials/intermediate/tight_layout_guide.html
+		# using constrained_layout=True on subplots() above is even worse!
+		# self._fig.tight_layout()
 
 	def _plot(self, n, station_name, n_packets, max_v):
 		""" _plot """
