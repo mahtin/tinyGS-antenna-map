@@ -7,13 +7,19 @@
 # If you have added more stations - then delete the cached data/stations.json file
 #
 
-if [ ! -s .user_id ]
+if [ "$#" -eq 1 ]
 then
-	echo "$0: Create a .user_id file which contains your tinyGS user id - which can be found via passwordless login link in telegram channel" 1>&2
-	exit 1
-fi
+	USER_ID=$1
+else
 
-USER_ID="`cat .user_id`"
+	if [ ! -s .user_id ]
+	then
+		echo "$0: Create a .user_id file which contains your tinyGS user id - see README file on GitHub" 1>&2
+		exit 1
+	fi
+
+	USER_ID="`cat .user_id`"
+fi
 
 DATE=`date -u +%Y-%m-%dT%H:%M:00`		# Everything is UTC - it's always UTC
 
@@ -21,10 +27,7 @@ SILENT='sS'					# Change to "" if you want some friendly debug
 
 DATA='data'
 
-if [ ! -d ${DATA} ]
-then
-	mkdir ${DATA}
-fi
+mkdir -p ${DATA} 2>/dev/null
 
 if [ ! -s ${DATA}/stations.json ]
 then
@@ -32,15 +35,21 @@ then
 	curl -${SILENT}LR \
 		-H 'Origin: https://tinygs.com' \
 		-H 'Host: api.tinygs.com' \
-		-H "Referer: https://tinygs.com/user/${USER_ID}" \
+		-H "Referer: https://tinygs.com/" \
 		-H 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.0.3 Safari/605.1.15' \
 		-H 'Accept: application/json, text/plain, */*' \
 		-H 'Accept-Language: en-us' \
-			"https://api.tinygs.com/v1/stations?userId=${USER_ID}" |\
-		jq . | tee ${DATA}/stations.json | jq -cr '.[]|.name'
+			"https://api.tinygs.com/v1/stations"
+		jq . > ${DATA}/stations.json
 fi
 
-STATION_LIST=`jq -cr '.[]|.name' < ${DATA}/stations.json | sort`
+STATION_LIST=`jq -cr '.[]|.name,.userId' < ${DATA}/stations.json | paste - - | awk '$2 == "'${USER_ID}'" { print $1; }' | sort`
+
+if [ -z "${STATION_LIST}" ]
+then
+	echo "$0: No station found for provided user id" 1>&2
+	exit
+fi
 
 for station in ${STATION_LIST}
 do
