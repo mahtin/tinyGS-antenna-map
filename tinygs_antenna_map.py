@@ -26,7 +26,8 @@ def tinygs_antenna_map(args):
 			+ '[-h|--help] '
 			+ '[-r|--refresh] '
 			+ '[-s|--station[,station...]] '
-			+ '[-u|--user] user-id '
+			+ '[-u|--user] user-id]'
+			+ '[-o|--output]'
 			)
 
 	try:
