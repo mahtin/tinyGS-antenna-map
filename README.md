@@ -19,11 +19,14 @@ $ chmod +x tinygs_antenna_map.py
 
 ## Setting up a user id file
 
-Use the Telegram channel passwordless login link to find your user id then create a user id file.
+Use your Telegram *TinyGS Personal Bot* channel to find your user id. It's the passwordless login link you get with the `/weblogin` command.
+![user id](/doc/images/telegram-tinygs-personal-bot-weblogin.png?raw=true "user id")
+The user id is the URL provided (see example image). Use it to create a `.user_id` file via the following command:
 ```
-$ echo '99999999' > .user_id
+$ echo '20000009' > .user_id
 $
 ```
+Your number will be different.
 
 ## Fetching data from tinyGS
 
