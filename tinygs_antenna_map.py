@@ -17,7 +17,7 @@ def tinygs_antenna_map(args):
 
 	verbose = False
 	refresh_data = False
-	station_name = None
+	station_names = None
 	user_id = None
 	output_flag = False
 
@@ -25,7 +25,7 @@ def tinygs_antenna_map(args):
 			+ '[-v|--verbose] '
 			+ '[-h|--help] '
 			+ '[-r|--refresh] '
-			+ '[-s|--station] '
+			+ '[-s|--station[,station...]] '
 			+ '[-u|--user] user-id '
 			)
 
@@ -42,7 +42,7 @@ def tinygs_antenna_map(args):
 		elif opt in ('-r', '--refresh'):
 			refresh_data = True
 		elif opt in ('-s', '--station'):
-			station_name = arg
+			station_names = arg
 		elif opt in ('-u', '--user'):
 			user_id = arg
 		elif opt in ('-o', '--output'):
@@ -57,16 +57,18 @@ def tinygs_antenna_map(args):
 		try:
 			with open('.user_id', 'r') as f:
 				user_id = f.read().strip()
-		except Exception as e:
-			sys.exit('%s: %s' % ('tinygs_antenna_map', e))
+		except FileNotFoundError as e:
+			#sys.exit('%s: %s' % ('tinygs_antenna_map', e))
+			user_id = None
 
 	if refresh_data:
 		# refresh_data - XXX to do - use fetch.sh for now
 		pass
 
 	pfp = PacketFileProcessing(user_id, verbose)
-	if station_name:
-		pfp.add_station(station_name)
+	if station_names:
+		for station_name in station_names.split(','):
+			pfp.add_station(station_name)
 	else:
 		pfp.add_all_stations()
 

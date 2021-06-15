@@ -20,7 +20,7 @@ class PacketFileProcessing:
 
 	DATA_DIRECTORY = 'data'
 
-	def __init__(self, user_id, verbose=False):
+	def __init__(self, user_id=None, verbose=False):
 		""" PacketFileProcessing """
 
 		self._user_id = user_id
@@ -41,16 +41,25 @@ class PacketFileProcessing:
 			j = json.load(fd)
 			for s in j:
 				station_name = str(s['name'])
+				user_id = str(s['userId'])
+				if self._user_id and self._user_id != user_id:
+					continue
 				if match and station_name != match:
 					continue
+				# does data for the station exist
+				if not os.path.isdir(PacketFileProcessing.DATA_DIRECTORY + '/' + station_name):
+					#if self._verbose:
+					#	print('%s: Station skipped - no data!' % (station_name), file=sys.stderr)
+					continue
+
 				lnglat = LongLat(float(s['location'][1]), float(s['location'][0]))
 				# we don't use all the data from the json file
-				self._add_station(station_name, lnglat)
+				self._add_station(station_name, user_id, lnglat)
 
-	def _add_station(self, station_name, lnglat):
+	def _add_station(self, station_name, user_id, lnglat):
 		""" _add_station """
 
-		station = Station(station_name, lnglat)
+		station = Station(station_name, user_id, lnglat)
 		self._stations[station_name] = station
 		self._sat[station_name] = Satellite()
 		self._sat[station_name].set_observer(station.lnglat, station.elevation)

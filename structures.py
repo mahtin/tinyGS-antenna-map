@@ -37,8 +37,9 @@ class LongLat:
 class Station:
 	""" Station - just enough to know about a station """
 
-	def __init__(self, name, lnglat, elevation=0.0):
+	def __init__(self, name, user_id, lnglat, elevation=0.0):
 		self.name = str(name)
+		self.user_id = int(user_id)
 		self.lnglat = lnglat
 		self.elevation = float(elevation)
 
