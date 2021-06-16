@@ -7,7 +7,6 @@
 """
 
 import math
-from matplotlib import __version__ as __matplotlib__version__
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 import matplotlib.colors as colors
@@ -185,8 +184,7 @@ class PolarAntennaMap:
 				ticks = [v_min, v_max]
 
 		v_cmap = cm.ScalarMappable(norm=colors.Normalize(vmin=v_min, vmax=v_max), cmap=self._cmap)
-		if __matplotlib__version__ < '3.4.2':
-			v_cmap.set_array([])
+		v_cmap.set_array([])	# Not needed in matplotlib version 3.4.2 (and above?); but safe to leave in
 		cbar = plt.colorbar(v_cmap, ax=self._axs[n], orientation='horizontal', ticks=ticks)
 		cbar.set_label('#Packets/Direction')
 
