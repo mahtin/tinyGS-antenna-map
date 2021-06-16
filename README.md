@@ -5,7 +5,15 @@ This is the antenna performance plotted from [tinyGS](https://tinygs.com) recept
 
 ## Install
 
-The package is written in Python and requires some additional packages.
+The Matplotlib library reqires numpy library. On a Raspberry Pi (and maybe other systems) it's best to install these required Linux packages first:
+```bash
+$ sudo apt install -y python3-numpy libopenjp2-7-dev libtiff5 libatlas-base-dev
+...
+$
+```
+This need was found via [numpy issue 14772](https://github.com/numpy/numpy/issues/14772) and [stackoverflow's vast collection of answers](https://stackoverflow.com/questions/48012582/pillow-libopenjp2-so-7-cannot-open-shared-object-file-no-such-file-or-directo).
+
+As the program is written in Python, it requires some additional Python packages/libaries to be installed before running anything.
 ```bash
 $ pip3 install -r requirements.txt
 ...
@@ -17,19 +25,24 @@ if you see the following error ...
 RuntimeError: module compiled against API version 0xe but this version of numpy is 0xd
 ```
 ... it's a case of `Matplotlib` and `numby` being out of sync. Make sure both are updated via the `pip3` command above.
-See https://github.com/numpy/numpy/issues/655 & https://github.com/matplotlib/matplotlib/issues/10135 & https://stackoverflow.com/questions/48054531/runtimeerror-module-compiled-against-api-version-0xc-but-this-version-of-numpy etc etc.
+See [numpy issue 655](https://github.com/numpy/numpy/issues/655) and [matplotlib issue 10135](https://github.com/matplotlib/matplotlib/issues/10135) and [yet another stackpath answer]( https://stackoverflow.com/questions/48054531/runtimeerror-module-compiled-against-api-version-0xc-but-this-version-of-numpy) etc etc.
 
 ### Grab the jq program
 
+Additionally, you will need the [jq](https://stedolan.github.io/jq/download/) command.
 Do one of the following. On Linux:
 ```bash
-sudo apt-get install jq
+$ sudo apt-get install jq
+...
+$
 ```
-or on Mac:
+On Mac:
 ```bash
-brew install jq
+$ brew install jq
+...
+$
 ```
-Or whatever is correct on your system to install [jq](https://stedolan.github.io/jq/download/).
+Or whatever is the correct way to install jq on your system.
 
 ## Executable
 
