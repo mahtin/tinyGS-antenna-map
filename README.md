@@ -19,11 +19,23 @@ RuntimeError: module compiled against API version 0xe but this version of numpy 
 ... it's a case of `Matplotlib` and `numby` being out of sync. Make sure both are updated via the `pip3` command above.
 See https://github.com/numpy/numpy/issues/655 & https://github.com/matplotlib/matplotlib/issues/10135 & https://stackoverflow.com/questions/48054531/runtimeerror-module-compiled-against-api-version-0xc-but-this-version-of-numpy etc etc.
 
+### Grab the jq program
+
+Do one of the following. On Linux:
+```bash
+sudo apt-get install jq
+```
+or on Mac:
+```bash
+brew install jq
+```
+Or whatever is correct on your system to install [jq](https://stedolan.github.io/jq/download/).
+
 ## Executable
 
-Also make the `tinygs_antenna_map.py` file executable.
+Also make the `fetch.sh` and  `tinygs_antenna_map.py` file executable.
 ```bash
-$ chmod +x tinygs_antenna_map.py
+$ chmod +x fetch.sh tinygs_antenna_map.py
 ```
 
 ## Setting up your user-id

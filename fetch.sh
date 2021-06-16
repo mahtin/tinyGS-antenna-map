@@ -29,6 +29,12 @@ DATA='data'
 
 mkdir -p ${DATA} 2>/dev/null
 
+if [ "`which jq`" == "" ]
+then
+	echo "$0: Install jq command - see README file on GitHub" 1>&2
+	exit 1
+fi
+
 if [ ! -s ${DATA}/stations.json ]
 then
 	# Grab a fresh stations list
@@ -39,7 +45,7 @@ then
 		-H 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.0.3 Safari/605.1.15' \
 		-H 'Accept: application/json, text/plain, */*' \
 		-H 'Accept-Language: en-us' \
-			"https://api.tinygs.com/v1/stations"
+			"https://api.tinygs.com/v1/stations" |\
 		jq . > ${DATA}/stations.json
 fi
 
