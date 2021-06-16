@@ -66,6 +66,7 @@ class PolarAntennaMap:
 		if not self._processed:
 			self._process()
 			self._processed = True
+		plt.tight_layout()
 		plt.savefig(fd, dpi=150, transparent=False, format=file_format)
 
 	def _process(self):

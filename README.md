@@ -98,6 +98,13 @@ All your stations will be plotted on a single page. Make the displayed page larg
 $ ./tinygs_antenna_map.py
 ```
 
+This assumes that you are on a machine with a display. If you are headless, then the following will be useful:
+```bash
+$ ./tinygs_antenna_map.py -o > pretty-graph.png
+$ scp pretty-graph.png somewhere-else.example.com:
+```
+This isn't a perfect method; but works for today.
+
 ### tinygs_antenna_map.py options
 
 The `tinygs_antenna_map.py` program takes various arguments.
