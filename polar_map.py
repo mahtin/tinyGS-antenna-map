@@ -7,6 +7,7 @@
 """
 
 import math
+from matplotlib import __version__ as __matplotlib__version__
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 import matplotlib.colors as colors
@@ -87,12 +88,12 @@ class PolarAntennaMap:
 		n = 0
 		for station_name in sorted(self._stations):
 			n_packets = len(self._packets[station_name])
-			max_v = 0
+			v_max = 0
 			for k in self._buckets[station_name]:
-				if self._buckets[station_name][k] > max_v:
-					max_v = self._buckets[station_name][k]
+				if self._buckets[station_name][k] > v_max:
+					v_max = self._buckets[station_name][k]
 
-			self._plot(n, station_name, n_packets, max_v)
+			self._plot(n, station_name, n_packets, v_max)
 			n += 1
 
 		# XXX - this slows down Matplotlib a lot - need to find out how to not use it!
@@ -101,7 +102,7 @@ class PolarAntennaMap:
 		# using constrained_layout=True on subplots() above is even worse!
 		# self._fig.tight_layout()
 
-	def _plot(self, n, station_name, n_packets, max_v):
+	def _plot(self, n, station_name, n_packets, v_max):
 		""" _plot """
 
 		# build the actual plot - background color shading
@@ -125,7 +126,7 @@ class PolarAntennaMap:
 			radii.append(-PolarAntennaMap.radius_scale)
 
 			# color
-			shades.append(self._cmap(v/max_v))
+			shades.append(self._cmap(v/v_max))
 
 		self._axs[n].bar(theta, radii, bottom=bottom, width=width, color=shades, alpha=0.9, label=station_name, linewidth=0.25)
 
@@ -172,17 +173,21 @@ class PolarAntennaMap:
 		title = '%s\n%d Total Packets' % (station_name.replace('_', ' '), n_packets)
 		self._axs[n].set_title(title, pad=24.0, fontdict={'fontsize':12.0})
 
-		min_v = 0
-		if max_v == 0:
-			max_v =  min_v + 1
-		if max_v - min_v <= 10:
-			ticks = range(min_v,max_v+1)
+		v_min = 0
+		if v_max == 0:
+			v_max =  v_min + 1
+		if v_max - v_min <= 10:
+			ticks = range(v_min,v_max+1)
 		else:
-			if ((max_v - max_v+1) % 2) == 0:
-				ticks = range(min_v,max_v+1, 2)
+			if ((v_max - v_max+1) % 2) == 0:
+				ticks = range(v_min,v_max+1, 2)
 			else:
-				ticks = [min_v, max_v]
-		cbar = plt.colorbar(cm.ScalarMappable(norm=colors.Normalize(vmin=min_v, vmax=max_v), cmap=self._cmap), ax=self._axs[n], orientation='horizontal', ticks=ticks)
+				ticks = [v_min, v_max]
+
+		v_cmap = cm.ScalarMappable(norm=colors.Normalize(vmin=v_min, vmax=v_max), cmap=self._cmap)
+		if __matplotlib__version__ < '3.4.2':
+			v_cmap.set_array([])
+		cbar = plt.colorbar(v_cmap, ax=self._axs[n], orientation='horizontal', ticks=ticks)
 		cbar.set_label('#Packets/Direction')
 
 		# self._axs[n].tick_params(grid_color='gray', labelcolor='gray')
