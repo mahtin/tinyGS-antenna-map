@@ -7,7 +7,7 @@ This is the antenna performance plotted from [tinyGS](https://tinygs.com) recept
 
 The package is written in Python and requires some additional packages.
 ```bash
-$ pip3 install -U `cat requirements`
+$ pip3 install -r requirements.txt
 ...
 $
 ```
