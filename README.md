@@ -74,7 +74,7 @@ $
 
 The `Matplotlib` library reqires the somewhat-matching `numpy` library.
 On a Raspberry Pi (and maybe other systems) it's best to install these packages via system commands (vs `pip3`).
-However, you can upgrade them to the latest code (if you really desire) using  these commands:
+However, you can upgrade them to the latest code (if you really desire) using these commands:
 
 ```bash
 $ sudo apt install -y python3-numpy libopenjp2-7-dev libtiff5 libatlas-base-dev
@@ -105,7 +105,7 @@ $ chmod +x tinygs_antenna_map.py
 To plot your own graphs from your own stations, you need to know what your own user-id on TinyGS is.
 The first option is to save it away in a file for all the code to use.
 
-### Storing  your user-id
+### Storing your user-id
 
 Use your Telegram **TinyGS Personal Bot** channel to find your user-id. It's the passwordless login link you get with the `/weblogin` command.
 
@@ -121,27 +121,6 @@ Your number will be different.
 ### Specifying user for each run
 
 If you choose, you specify your user-id manually on each command below.
-
-## Fetching data from tinyGS
-
-This is removed - not needed anymore
-~~
-**NOTE** If you run this script often you will get banned from tinyGS website. It's not meant to be run more than once a day (or less).
-```bash
-$ ./fetch.sh
-...
-$
-```
-This will create a `data` directory and start populating it with station packet data.
-
-If you wish to manually specify your user-id (or plot a different user-id), then do the following:
-```bash
-$ ./fetch.sh 20000009
-...
-$
-```
-Your number will be different.
-~~
 
 ## Plotting your antenna map
 
