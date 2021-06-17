@@ -2,7 +2,7 @@
 
 This is removed - not needed anymore.
 
-**NOTE** If you run this script often you will get banned from tinyGS website. It's not meant to be run more than once a day (or less).
+**NOTE** If you run this script often you will get banned from the tinyGS website. It's not meant to be run more than once a day (or less).
 ```bash
 $ ./fetch.sh
 ...

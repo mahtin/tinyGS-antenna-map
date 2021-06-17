@@ -1,28 +1,31 @@
 # tinyGS-antenna-map
 This is the antenna performance plotted from [tinyGS](https://tinygs.com) reception data. See their [repository](https://github.com/G4lile0/tinyGS).
 
+The code produces a plot that provides Azimuth and Elevation information showing the location in the sky, based on the observer/station, where the satellite reception is successful and packets are uploaded to TinyGS.
+
 ![W6LHI 433Mhhz 2](/doc/images/W6LHI_433Mhz_2.png?raw=true "W6LHI 433Mhhz 2")
 
-The plot provides Azimuth and Elevation information showing the places in the sky, based on the observer/station, where the most satellite reception happens.
-Darker means more reception. Individual packets received are the black dots. CRC Errors are shown as red dots.
+Darker quadrants mean more reception.
+Individual packets received are the black dots. Packets received with CRC Errors are shown as red dots.
+
 The center of the circle is exactly vertical from the observer/station.
 The edge of the circle is the horizon (well, kinda!).
 
-For example, if you had just a simple horizontal dipole, then you would see a bias in the data towards the higher reception direction (90 degrees to the dipole).
-If you have a tracking antenna then you should see a very spread out reception.
+For example, if you operate with a simple horizontal dipole, then you would see a bias in the data towards the higher reception direction (90 degrees from the dipole length).
+If you have a Al/Ez tracking antenna then you should see a very broad reception map.
 
-The program will display on the desktop if it is run in that environment.
+The program will display the plot on the desktop if it is run in that environment.
 If you want a CLI process, then look at the `-o` flag below.
-The program uses `Matplotlib` and the INSTALL instructions are included.
+The program uses `Matplotlib` and the install instructions are included - follow them carefully.
+All instructions are for Debian (and tested on a R.Pi). This code should work on other systems.
 Any problems? - please use GitHub issues.
 
 ## Install
 
-### Install code from GitHub
+### Download and install code from GitHub
 
-The best copy of this code is on GitHub.
-
-If you need the `git` command (you will):
+The best copy of this code is always on GitHub.
+If you need the `git` command (and you will) do this part first:
 
 ```bash
 $ sudo apt-get install -y git
@@ -30,7 +33,7 @@ $ sudo apt-get install -y git
 $
 ```
 
-Download this code:
+Grab the code via this:
 
 ```bash
 $ git clone https://github.com/mahtin/tinyGS-antenna-map.git
@@ -41,11 +44,11 @@ $
 
 ### Installing required packages (i.e Matplotlib)
 
-Please read follow the [INSTALL-MATPLOTLIB](/INSTALL-MATPLOTLIB.md) page. Then return here after that is finished.
+Please read and follow the [INSTALL-MATPLOTLIB](/INSTALL-MATPLOTLIB.md) page. Then return here after that is finished.
 
-### Install
+### Install continued
 
-Once `Matplotlib` is install cleanly the code requires some additional packages/libaries:
+Once `Matplotlib` is install cleanly the code requires some additional packages/libraries:
 
 ```bash
 $ sudo python3 -m pip install -U -r requirements.txt
@@ -53,7 +56,7 @@ $ sudo python3 -m pip install -U -r requirements.txt
 $
 ```
 
-Now the install is finished.
+Now the install is finished. Congratulations.
 
 ## Setting up your user-id
 
@@ -109,12 +112,12 @@ tinygs_antenna_map [-v|--verbose] [-h|--help] [-r|--refresh] [-s|--station[,stat
 
  * [-v|--verbose] - provide some information on each of the packets being processed/displayed.
  * [-h|--help] - this message.
- * [-r|--refresh] - presently unused; but will pull data from TinyGS site on demant.
+ * [-r|--refresh] - presently unused; but will pull data from TinyGS site on demand.
  * [-s|--station[,station...]] - list the station or stations to plot. Use comma-seperated (i.e. A,B,C) for more than one station.
  * [-u|--user] user-id] - define the user-id vs using the `.user_id` file.
  * [-o|--output] - produce a PNG file on stdout (use: `tinygs_antenna_map.py -o > diagram.png` for example`).
 
-### Specifing the station or user-id
+### Specifying the station or user-id
 
 To produce a plot for a specific user (for example `20000009`):
 

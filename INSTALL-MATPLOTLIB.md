@@ -24,7 +24,7 @@ $
 
 ### Installing Matplotlib
 
-After a hunk of testing, I've decied that using the system packages for `Matplotlib` (this will include `numpy`) is the best way to go.
+After a hunk of testing, I've decided that using the system packages for `Matplotlib` (this will include `numpy`) is the best way to go.
 
 ```bash
 $ sudo apt-get install -y python3-matplotlib
@@ -52,9 +52,9 @@ $
 
 ### Special notes on Matplotlib
 
-**This section is not normally needed; but provided for users that want newer libaries**
+**This section is not normally needed; but provided for users that want newer libraries**
 
-The `Matplotlib` library reqires the somewhat-matching `numpy` library.
+The `Matplotlib` library requires the somewhat-matching `numpy` library.
 On a Raspberry Pi (and maybe other systems) it's best to install these packages via system commands (vs `pip3`).
 However, you can upgrade them to the latest code (if you really desire) using these commands:
 
@@ -66,7 +66,7 @@ $ sudo python3 -m pip install -U matplotlib numpy
 $
 ```
 
-There's plenty of issues with this method of install. More can be found via [numpy issue 14772](https://github.com/numpy/numpy/issues/14772) and [stackoverflow's vast collection of answers](https://stackoverflow.com/questions/48012582/pillow-libopenjp2-so-7-cannot-open-shared-object-file-no-such-file-or-directo).
+There's plenty of issues with this method of installation. More can be found via [numpy issue 14772](https://github.com/numpy/numpy/issues/14772) and [stackoverflow's vast collection of answers](https://stackoverflow.com/questions/48012582/pillow-libopenjp2-so-7-cannot-open-shared-object-file-no-such-file-or-directo).
 
 if you see the following error ...
 ```
