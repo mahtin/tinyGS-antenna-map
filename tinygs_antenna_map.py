@@ -67,7 +67,8 @@ def tinygs_antenna_map(args):
 		pass
 
 	try:
-		user_id = int(user_id)
+		if user_id:
+			user_id = int(user_id)
 		if user_id == '0':
 			user_id = None
 	except ValueError:

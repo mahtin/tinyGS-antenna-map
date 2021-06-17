@@ -37,7 +37,7 @@ class PacketFileProcessing:
 	def __init__(self, user_id=None, verbose=False):
 		""" PacketFileProcessing """
 
-		self._user_id = int(user_id)
+		self._user_id = user_id
 		self._stations = None
 		self._my_stations = {}
 		self._sat = {}
