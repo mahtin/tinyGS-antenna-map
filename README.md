@@ -3,7 +3,11 @@ This is the antenna performance plotted from [tinyGS](https://tinygs.com) recept
 
 The code produces a plot that provides Azimuth and Elevation information showing the location in the sky, based on the observer/station, where the satellite reception is successful and packets are uploaded to TinyGS.
 
-![W6LHI 433Mhhz 2](/doc/images/W6LHI_433Mhz_2.png?raw=true "W6LHI 433Mhhz 2")
+My four active stations show very different reception patterns.
+These are a 433Mhz vertical 1/4 wave antenna, a 433Mhz vertical dipole, a 433Mhz horizontal dipole, and a 1/4 wave 915 Mhz antenna (that has received nothing useful as there aren't any satellites presently transmitting).
+All are on the East side of the house and somewhat blocked towards the West.
+
+![W6LHI](/doc/images/W6LHI.png?raw=true "W6LHI")
 
 Darker quadrants mean more reception.
 Individual packets received are the black dots. Packets received with CRC Errors are shown as red dots.
