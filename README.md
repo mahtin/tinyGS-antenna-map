@@ -55,7 +55,6 @@ $
 Additionally, you will need the [jq](https://stedolan.github.io/jq/download/) command plus `git` commands.
 
 ```bash
-$ sudo apt-get install jq
 $ sudo apt-get install -y jq git
 ...
 $
