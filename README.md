@@ -41,7 +41,7 @@ $
 
 ### Installing required packages (i.e Matplotlib)
 
-Please read [INSTALL](/INSTALL.md) page and return here aftet finished.
+Please read follow the [INSTALL-MATPLOTLIB](/INSTALL-MATPLOTLIB.md) page. Then return here after that is finished.
 
 ### Install
 
