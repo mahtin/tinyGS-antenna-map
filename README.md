@@ -103,7 +103,15 @@ $ ./tinygs_antenna_map.py -o > pretty-graph.png
 $ scp pretty-graph.png somewhere-else.example.com:
 ```
 
-This file image save code isn't a perfect method; but works for today.
+If `Matplotlib` sends out warning messages about `Connection Refused` or `Gdk-CRITICAL`, it's because you can't connect to the display (even if you are trying to write an image file).
+This still produces an image.
+You can fix this by setting the `MPLBACKEND` environment variable (see `Matplotlib` [builtin backends](https://matplotlib.org/stable/tutorials/introductory/usage.html?highlight=mplbackend#the-builtin-backends) instructions):
+
+```bash
+$ MPLBACKEND=Agg ./tinygs_antenna_map.py -o > pretty-graph.png
+...
+$
+```
 
 ### tinygs_antenna_map.py options
 
