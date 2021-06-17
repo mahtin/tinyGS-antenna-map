@@ -14,7 +14,6 @@ This code is Python3 and the following system cleanup would be useful for many o
 $ sudo apt-get update
 ...
 $
-
 $ sudo apt-get install -y python3-pip
 ...
 $ sudo apt-get remove -y python2
@@ -26,7 +25,7 @@ $
 
 ### Installing Matplotlib
 
-After a hunk of testing, I've decied that useing the system packages for `Matplotlib` (this will include `numpy`) is the best way to go.
+After a hunk of testing, I've decied that using the system packages for `Matplotlib` (this will include `numpy`) is the best way to go.
 
 ```bash
 $ sudo apt-get install -y python3-matplotlib
@@ -72,6 +71,8 @@ $
 ```
 
 ### Special notes on Matplotlib
+
+**This section is not normally needed; but provided for users that want newer libaries**
 
 The `Matplotlib` library reqires the somewhat-matching `numpy` library.
 On a Raspberry Pi (and maybe other systems) it's best to install these packages via system commands (vs `pip3`).
