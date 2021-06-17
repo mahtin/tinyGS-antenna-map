@@ -13,7 +13,6 @@ This code is Python3 and the following system cleanup would be useful for many o
 
 $ sudo apt-get update
 ...
-$
 $ sudo apt-get install -y python3-pip
 ...
 $ sudo apt-get remove -y python2
