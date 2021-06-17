@@ -121,5 +121,6 @@ class Satellite:
 					n = (n + 1) % 3
 
 		except FileNotFoundError as e:
-			print('%s: %s - WILL CONTINUE ANYWAY' % (Satellite._tle_filename, e), file=sys.stderr)
+			# print('%s: %s - WILL CONTINUE ANYWAY' % (Satellite._tle_filename, e), file=sys.stderr)
+			pass
 
