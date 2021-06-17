@@ -74,6 +74,9 @@ def tinygs_antenna_map(args):
 	except ValueError:
 		sys.exit(usage)
 
+	if user_id == None and (station_names == None or len(station_names) == 0):
+		sys.exit(usage)
+
 	pfp = PacketFileProcessing(user_id, verbose)
 	if station_names:
 		for station_name in station_names.split(','):
