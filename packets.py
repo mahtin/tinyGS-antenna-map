@@ -116,7 +116,7 @@ class PacketFileProcessing:
 			filenames = self._fetch_packets_from_tinygs(station)
 
 			for filename in filenames:
-				with open(PacketFileProcessing.DATA_DIRECTORY + '/' + station_name + '/' + filename, 'r', , encoding='utf8') as fd:
+				with open(PacketFileProcessing.DATA_DIRECTORY + '/' + station_name + '/' + filename, 'r', encoding='utf8') as fd:
 					j = json.load(fd)
 					if 'packets' not in j:
 						continue
