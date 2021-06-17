@@ -3,9 +3,11 @@ This is the antenna performance plotted from [tinyGS](https://tinygs.com) recept
 
 ## Install
 
-### The basics - setting up Python in a Raspberry Pi (or similar)
+Having a good Python 3 setup is vital. Getting a good `Matplotlib` setup is tricky, but doable.
 
-This code is Python3 and the following system cleanup would be useful for many other systems/programs. This confirms that only Python3 is installed and that it's cleanly running!
+### The basics - setting up Python 3 in a Raspberry Pi (or similar)
+
+This code is Python 3 and the following system cleanup would be useful for many other systems/programs. This confirms that only Python 3 is installed and that it's cleanly running!
 
 ``` bash
 
@@ -48,24 +50,6 @@ $ python3 -c 'import matplotlib,numpy;print(matplotlib.__version__);print(numpy.
 $
 ```
 
-### Installing additional items
-
-Additionally, you will need the [jq](https://stedolan.github.io/jq/download/) command plus `git` commands.
-
-```bash
-$ sudo apt-get install -y jq git
-...
-$
-```
-
-As the program is written in Python, it requires some additional Python packages/libaries to be installed before running anything.
-
-```bash
-$ sudo python3 -m pip install -U -r requirements.txt
-...
-$
-```
-
 ### Special notes on Matplotlib
 
 **This section is not normally needed; but provided for users that want newer libaries**
@@ -90,17 +74,6 @@ RuntimeError: module compiled against API version 0xe but this version of numpy 
 ```
 ... it's a case of `Matplotlib` and `numby` being out of sync. Make sure both are updated via the `pip3` command above.
 See [numpy issue 655](https://github.com/numpy/numpy/issues/655) and [matplotlib issue 10135](https://github.com/matplotlib/matplotlib/issues/10135) and [yet another stackpath answer]( https://stackoverflow.com/questions/48054531/runtimeerror-module-compiled-against-api-version-0xc-but-this-version-of-numpy) etc etc.
-
-## Install from GitHub
-
-To download this code:
-
-```bash
-$ git clone https://github.com/mahtin/tinyGS-antenna-map.git
-...
-$ cd tinyGS-antenna-map
-$
-```
 
 ## Next steps
 

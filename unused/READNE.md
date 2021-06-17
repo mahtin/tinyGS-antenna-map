@@ -18,3 +18,13 @@ $
 ```
 Your number will be different.
 
+## The jq program
+
+Additionally, you will need the [jq](https://stedolan.github.io/jq/download/) command to get `fetch.sh` to work.
+
+```bash
+$ sudo apt-get install -y jq
+...
+$
+```
+

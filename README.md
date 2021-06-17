@@ -18,7 +18,42 @@ Any problems? - please use GitHub issues.
 
 ## Install
 
+### Install code from GitHub
+
+The best copy of this code is on GitHub.
+
+If you need the `git` command (you will):
+
+```bash
+$ sudo apt-get install -y git
+...
+$
+```
+
+Download this code:
+
+```bash
+$ git clone https://github.com/mahtin/tinyGS-antenna-map.git
+...
+$ cd tinyGS-antenna-map
+$
+```
+
+### Installing required packages (i.e Matplotlib)
+
 Please read [INSTALL](/INSTALL.md) page and return here aftet finished.
+
+### Install
+
+Once `Matplotlib` is install cleanly the code requires some additional packages/libaries:
+
+```bash
+$ sudo python3 -m pip install -U -r requirements.txt
+...
+$
+```
+
+Now the install is finished.
 
 ## Setting up your user-id
 
@@ -44,7 +79,7 @@ Your number will be different.
 
 ### Specifying user for each run
 
-If you choose, you specify your user-id manually on each command below.
+If you choose, you specify your user-id manually on each command run. See the `-u` option  below.
 
 ## Plotting your antenna map
 
@@ -61,7 +96,7 @@ $ ./tinygs_antenna_map.py -o > pretty-graph.png
 $ scp pretty-graph.png somewhere-else.example.com:
 ```
 
-This isn't a perfect method; but works for today.
+This file image save code isn't a perfect method; but works for today.
 
 ### tinygs_antenna_map.py options
 
@@ -101,11 +136,11 @@ To produce a plot for someone else station (and I'm not judging you in anyway):
 $ ./tinygs_antenna_map.py -s MALAONE -u 0
 ```
 
-(No idea who `MALAONE` is). Note the `-u 0` argument. This overtides your `.user_id` file (as this is a different user).
+(No idea who `MALAONE` is). Note the `-u 0` argument. This overtides your `.user_id` file if it exists (as this station is a different user).
 
 ## Optional TLE data from tinyGS
 
-Should there be more satellites than are build into `satellite.py` file, then the following could help:
+Should TinyGS support more satellites before this code syncs up with them, then the following could help:
 
 ```
 $ curl -sSLR https://api.tinygs.com/v1/tinygs_supported.txt > data/tinygs_supported.txt
