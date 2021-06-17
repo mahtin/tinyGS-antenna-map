@@ -72,10 +72,10 @@ def tinygs_antenna_map(args):
 		if user_id == '0':
 			user_id = None
 	except ValueError:
-		sys.exit(usage)
+		sys.exit('%s: user-id provided is non numeric' % ('tinygs_antenna_map'))
 
 	if user_id == None and (station_names == None or len(station_names) == 0):
-		sys.exit(usage)
+		sys.exit('%s: No station or user-id provided' % ('tinygs_antenna_map'))
 
 	pfp = PacketFileProcessing(user_id, verbose)
 	if station_names:
