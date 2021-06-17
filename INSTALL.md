@@ -91,11 +91,15 @@ RuntimeError: module compiled against API version 0xe but this version of numpy 
 ... it's a case of `Matplotlib` and `numby` being out of sync. Make sure both are updated via the `pip3` command above.
 See [numpy issue 655](https://github.com/numpy/numpy/issues/655) and [matplotlib issue 10135](https://github.com/matplotlib/matplotlib/issues/10135) and [yet another stackpath answer]( https://stackoverflow.com/questions/48054531/runtimeerror-module-compiled-against-api-version-0xc-but-this-version-of-numpy) etc etc.
 
-## Executable
+## Install from GitHub
 
-Also make the `tinygs_antenna_map.py` file executable.
+To download this code:
+
 ```bash
-$ chmod +x tinygs_antenna_map.py
+$ git clone https://github.com/mahtin/tinyGS-antenna-map.git
+...
+$ cd tinyGS-antenna-map
+$
 ```
 
 ## Next steps
