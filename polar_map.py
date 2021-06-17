@@ -95,11 +95,20 @@ class PolarAntennaMap:
 			self._plot(n, station_name, n_packets, v_max)
 			n += 1
 
+		# This seems wrong - but I'm sticking with it for now
+		width_inches = 3
+		height_inches = 5
+		self._fig.set_size_inches(width_inches * len(self._stations), height_inches)
+
 		# XXX - this slows down Matplotlib a lot - need to find out how to not use it!
 		# https://github.com/matplotlib/matplotlib/issues/16550
 		# https://matplotlib.org/stable/tutorials/intermediate/tight_layout_guide.html
 		# using constrained_layout=True on subplots() above is even worse!
 		# self._fig.tight_layout()
+
+		title = ' '.join(sorted(self._stations))
+		# self._fig.canvas.set_window_title(title)
+		plt.get_current_fig_manager().set_window_title(title)
 
 	def _plot(self, n, station_name, n_packets, v_max):
 		""" _plot """
@@ -158,19 +167,20 @@ class PolarAntennaMap:
 		self._axs[n].set_theta_direction(-1)
 		self._axs[n].set_thetagrids(
 			(0.0, 22.5, 45.0, 67.5, 90.0, 112.5, 135.0, 157.5, 180.0, 202.5, 225.0, 247.5, 270.0, 292.5, 315.0, 337.5),
-			('N', '', 'NE', '', 'E', '', 'SE', '', 'S', '', 'SW', '', 'W', '', 'NW', '')
-			)
+			('N', '', 'NE', '', 'E', '', 'SE', '', 'S', '', 'SW', '', 'W', '', 'NW', ''),
+			fontsize='small')
 		self._axs[n].set_rlim(bottom=0.0, top=90.0, emit=False, auto=False)
 		self._axs[n].set_rgrids(
 			(self._map_el(90), self._map_el(80), self._map_el(70), self._map_el(60), self._map_el(50), self._map_el(40), self._map_el(30), self._map_el(20), self._map_el(10), self._map_el(0)),
 			('', '80', '', '60', '', '40', '', '20', '', ''),
-			angle=90.0)
+			angle=90.0,
+			fontsize='small')
 
 		# self._axs[n].set_xlabel('Direction/Azimuth')	# XXX doesn't work for polar
 		# self._axs[n].set_ylabel('Elevation')		# XXX doesn't work for polar
 
-		title = '%s\n%d Total Packets' % (station_name.replace('_', ' '), n_packets)
-		self._axs[n].set_title(title, pad=24.0, fontdict={'fontsize':12.0})
+		title = '%s\n%d Total Packets' % (station_name, n_packets)
+		self._axs[n].set_title(title, pad=24.0, fontdict={'fontsize':'medium'})
 
 		v_min = 0
 		if v_max == 0:
@@ -186,7 +196,7 @@ class PolarAntennaMap:
 		v_cmap = cm.ScalarMappable(norm=colors.Normalize(vmin=v_min, vmax=v_max), cmap=self._cmap)
 		v_cmap.set_array([])	# Not needed in matplotlib version 3.4.2 (and above?); but safe to leave in
 		cbar = plt.colorbar(v_cmap, ax=self._axs[n], orientation='horizontal', ticks=ticks)
-		cbar.set_label('#Packets/Direction')
+		cbar.set_label('#Packets/Direction', fontdict={'fontsize':'medium'})
 
 		# self._axs[n].tick_params(grid_color='gray', labelcolor='gray')
 		# self._axs[n].legend(loc='lower right', bbox_to_anchor=(1.2, 0.94), prop={'size': 6})
