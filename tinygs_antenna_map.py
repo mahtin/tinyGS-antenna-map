@@ -66,6 +66,13 @@ def tinygs_antenna_map(args):
 		# refresh_data - XXX to do - use fetch.sh for now
 		pass
 
+	try:
+		user_id = int(user_id)
+		if user_id == '0':
+			user_id = None
+	except ValueError:
+		sys.exit(usage)
+
 	pfp = PacketFileProcessing(user_id, verbose)
 	if station_names:
 		for station_name in station_names.split(','):
