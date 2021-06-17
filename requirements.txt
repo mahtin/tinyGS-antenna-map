@@ -1,3 +1,4 @@
 ephem
-numpy
-matplotlib
+requests
+matplotlib>=3.0.2
+numpy>=1.16.2
