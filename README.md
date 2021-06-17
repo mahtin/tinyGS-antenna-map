@@ -3,6 +3,13 @@ This is the antenna performance plotted from [tinyGS](https://tinygs.com) recept
 
 ![W6LHI 433Mhhz 2](/doc/images/W6LHI_433Mhz_2.png?raw=true "W6LHI 433Mhhz 2")
 
+The plot provides Azimuth and Elevation information showing the places in the sky, based on the observer/station, where the most satellite reception happens.Darker means more reception. Individual packets received are the black dots. CRC Errors are shown as red dots. The center of the circle is exactly vertical from the observer/station. The edge of the circle is the horizon (well, kinda!).
+
+For example, if you had just a simple horizontal dipole, then you would see a bias in the data towards the higher reception direction (90 degrees to the dipole). If you have a tracking antenna then you should see a very spread out reception.
+
+The program will display on the desktop if it is run in that environment. If you want a CLI process, then look at the `-o` flag below. The program uses `Matplotlib` and the INSTALL instructions are included.
+Any problems? - please use GitHub issues.
+
 ## Install
 
 Please read [INSTALL](/INSTALL.md) page and return here aftet finished.
@@ -67,7 +74,7 @@ $ ./tinygs_antenna_map.py -u 20000009
 
 Your number will be different.
 
-To produce a plot for one of your  specific stations, use the station name:
+To produce a plot for one of your specific stations, use the station name:
 
 ```bash
 $ ./tinygs_antenna_map.py -s W6LHI_433Mhz
