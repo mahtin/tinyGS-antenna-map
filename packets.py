@@ -98,7 +98,7 @@ class PacketFileProcessing:
 			for filename in files:
 				if filename[-5:] != '.json' :
 					continue
-				with open(PacketFileProcessing.DATA_DIRECTORY + '/' + station_name + '/' + filename, 'r') as fd:
+				with open(PacketFileProcessing.DATA_DIRECTORY + '/' + station_name + '/' + filename, 'r', encoding='utf8') as fd:
 					j = json.load(fd)
 					if 'packets' not in j:
 						continue
@@ -116,7 +116,7 @@ class PacketFileProcessing:
 			filenames = self._fetch_packets_from_tinygs(station)
 
 			for filename in filenames:
-				with open(PacketFileProcessing.DATA_DIRECTORY + '/' + station_name + '/' + filename, 'r') as fd:
+				with open(PacketFileProcessing.DATA_DIRECTORY + '/' + station_name + '/' + filename, 'r', , encoding='utf8') as fd:
 					j = json.load(fd)
 					if 'packets' not in j:
 						continue
@@ -238,7 +238,7 @@ class PacketFileProcessing:
 
 		stations = {}
 		try:
-			with open(stations_filename, 'r') as fd:
+			with open(stations_filename, 'r', encoding='utf8') as fd:
 				j = json.load(fd)
 				for s in j:
 					# we don't use all the data from the json file
@@ -257,7 +257,8 @@ class PacketFileProcessing:
 		""" fetch_packets_from_tinygs """
 
 		now = datetime.datetime.utcnow()
-		filename = now.strftime('%Y-%m-%dT%H:%M:00') + '.packets.json'
+		# Filenames on Windows can't have :'s (colons) so keep this simple!
+		filename = now.strftime('%Y-%m-%dT%H-%M-00') + '.packets.json'
 		packets_filename = PacketFileProcessing.DATA_DIRECTORY + '/' + station.name + '/' + filename
 
 		self._api_call(packets_filename, station)
@@ -284,7 +285,7 @@ class PacketFileProcessing:
 			r = requests.get(url, headers=headers, allow_redirects=True)
 			r.raise_for_status()
 			try:
-				# save away data
+				# save away data - this is byte for byte from the web - no encoding needed
 				with open(filename, 'wb') as fd:
 					fd.write(r.content)
 			except Exception as e:
