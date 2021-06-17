@@ -95,9 +95,9 @@ See [numpy issue 655](https://github.com/numpy/numpy/issues/655) and [matplotlib
 
 ## Executable
 
-Also make the `fetch.sh` and  `tinygs_antenna_map.py` file executable.
+Also make the `tinygs_antenna_map.py` file executable.
 ```bash
-$ chmod +x fetch.sh tinygs_antenna_map.py
+$ chmod +x tinygs_antenna_map.py
 ```
 
 ## Setting up your user-id
@@ -124,6 +124,8 @@ If you choose, you specify your user-id manually on each command below.
 
 ## Fetching data from tinyGS
 
+This is removed - not needed anymore
+~~
 **NOTE** If you run this script often you will get banned from tinyGS website. It's not meant to be run more than once a day (or less).
 ```bash
 $ ./fetch.sh
@@ -139,6 +141,7 @@ $ ./fetch.sh 20000009
 $
 ```
 Your number will be different.
+~~
 
 ## Plotting your antenna map
 
