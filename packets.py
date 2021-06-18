@@ -12,27 +12,15 @@ import time
 import json
 import datetime
 
-import requests
-
 from structures import AzEl, LongLat, Station, Packet
 from satellite import Satellite
 from polar_map import PolarAntennaMap
+from networking import Networking
 
 class PacketFileProcessing:
 	""" PacketFileProcessing - read files and generate data """
 
 	DATA_DIRECTORY = 'data'
-	URL_API_STATIONS = 'https://api.tinygs.com/v1/stations'
-	URL_API_PACKETS = 'https://api.tinygs.com/v2/packets'
-
-	HEADERS = {
-		'Origin': 'https://tinygs.com',
-		'Host': 'api.tinygs.com',
-		'Referer': 'https://tinygs.com/',
-		'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.0.3 Safari/605.1.15',
-		'Accept': 'application/json, text/plain, */*',
-		'Accept-Language': 'en-us'
-	}
 
 	def __init__(self, user_id=None, verbose=False):
 		""" PacketFileProcessing """
@@ -42,6 +30,7 @@ class PacketFileProcessing:
 		self._my_stations = {}
 		self._sat = {}
 		self._packets = {}
+		self._networking = Networking()
 		self._verbose = verbose
 
 	def add_station(self, station_name):
@@ -52,11 +41,11 @@ class PacketFileProcessing:
 	def add_all_stations(self, match=None):
 		""" add_all_stations """
 
-		if self._stations == None:
+		if self._stations is None:
 			self._fetch_stations_from_tinygs()
-		if self._stations == None:
+		if self._stations is None:
 			print('%s: No list of station to work with - exiting!', file=sys.stderr)
-			exit(1)
+			sys.exit(1)
 
 		ranking = 0
 		for station_name in self._stations:
@@ -80,8 +69,7 @@ class PacketFileProcessing:
 			self._sat[station.name] = Satellite()
 			self._sat[station.name].set_observer(station.lnglat, station.elevation)
 
-			#if self._verbose:
-			if True:
+			if self._verbose:
 				print('%s: Station processed! (#%d out of %d)' % (station.name, ranking, len(self._stations)), file=sys.stderr)
 
 	def list_stations(self):
@@ -94,21 +82,25 @@ class PacketFileProcessing:
 
 		uniq_packets = {}
 		most_recent_mtime = 0
-		for root, dirs, files in os.walk(PacketFileProcessing.DATA_DIRECTORY + '/' + station_name):
+		for _, _, files in os.walk(PacketFileProcessing.DATA_DIRECTORY + '/' + station_name):
 			for filename in files:
 				if filename[-5:] != '.json' :
 					continue
-				with open(PacketFileProcessing.DATA_DIRECTORY + '/' + station_name + '/' + filename, 'r', encoding='utf8') as fd:
-					j = json.load(fd)
-					if 'packets' not in j:
-						continue
-					p = self._read_packets(station_name, j['packets'])
-					# the uniquiness comes from using ident at the index; hence removing data with the same ident and hence date/time stamp
-					uniq_packets.update(p)
+				packets_filename = PacketFileProcessing.DATA_DIRECTORY + '/' + station_name + '/' + filename
+				try:
+					with open(packets_filename, 'r', encoding='utf8') as fd:
+						j = json.load(fd)
+						if 'packets' not in j:
+							continue
+						p = self._read_packets(station_name, j['packets'])
+						# the uniquiness comes from using ident at the index; hence removing data with the same ident and hence date/time stamp
+						uniq_packets.update(p)
 
-					s = os.fstat(fd.fileno())
-					if s.st_mtime > most_recent_mtime:
-						most_recent_mtime = s.st_mtime
+						s = os.fstat(fd.fileno())
+						if s.st_mtime > most_recent_mtime:
+							most_recent_mtime = s.st_mtime
+				except IOError as e:
+					print("%s: %s - CONTINUE ANYWAY" % (packets_filename, e), file=sys.stderr)
 
 		if int(time.time() - most_recent_mtime) > 12*3600:
 			# We need fresh data!
@@ -116,13 +108,19 @@ class PacketFileProcessing:
 			filenames = self._fetch_packets_from_tinygs(station)
 
 			for filename in filenames:
-				with open(PacketFileProcessing.DATA_DIRECTORY + '/' + station_name + '/' + filename, 'r', encoding='utf8') as fd:
-					j = json.load(fd)
-					if 'packets' not in j:
-						continue
-					p = self._read_packets(station_name, j['packets'])
-					# the uniquiness comes from using ident at the index; hence removing data with the same ident and hence date/time stamp
-					uniq_packets.update(p)
+				if filename[-5:] != '.json' :
+					continue
+				packets_filename = PacketFileProcessing.DATA_DIRECTORY + '/' + station_name + '/' + filename
+				try:
+					with open(packets_filename, 'r', encoding='utf8') as fd:
+						j = json.load(fd)
+						if 'packets' not in j:
+							continue
+						p = self._read_packets(station_name, j['packets'])
+						# the uniquiness comes from using ident at the index; hence removing data with the same ident and hence date/time stamp
+						uniq_packets.update(p)
+				except IOError as e:
+					print("%s: %s - CONTINUE ANYWAY" % (packets_filename, e), file=sys.stderr)
 
 		self._packets[station_name] = uniq_packets
 
@@ -149,23 +147,29 @@ class PacketFileProcessing:
 					print('%s: %s @ %s CRC-ERROR' % (station_name, packet.satellite, packet.azel))
 
 	def file_packets(self, fd=sys.stdout.buffer, file_format='png'):
+		""" file_packets """
+
 		plot = self._plot_packets()
 		plot.output(fd, file_format)
 
 	def plot_packets(self):
+		""" plot_packets """
 		plot = self._plot_packets()
 		plot.display()
 
 	def _plot_packets(self):
+		""" _plot_packets """
+
 		if len(self._my_stations) == 0:
 			raise ValueError('Plot not available because no stations added')
 		plot = PolarAntennaMap()
-		for station_name in self._my_stations.keys():
+		for station_name in self._my_stations:
 			plot.add_packets(station_name, self._packets[station_name])
 		return plot
 
 	def _read_packets(self, station_name, packets):
 		""" _read_packets """
+
 		uniq_packets = {}
 		for p in packets:
 			ident = str(p['id'])
@@ -214,7 +218,6 @@ class PacketFileProcessing:
 			pass
 
 		stations_filename = PacketFileProcessing.DATA_DIRECTORY + '/' + 'stations.json'
-		full_path_url = PacketFileProcessing.URL_API_STATIONS
 
 		file_update = False
 
@@ -224,7 +227,7 @@ class PacketFileProcessing:
 			# Let's assume the file does not exist
 			file_update = True
 
-		if file_update == False:
+		if not file_update:
 			if s.st_size == 0:
 				# Zero length files are bad - lets update it
 				file_update = True
@@ -234,7 +237,7 @@ class PacketFileProcessing:
 
 		if file_update:
 			# Grab a fresh copy from the web (yes - I said "the web")
-			self._api_call(stations_filename, None)
+			self._networking.stations(stations_filename)
 
 		stations = {}
 		try:
@@ -243,14 +246,14 @@ class PacketFileProcessing:
 				for s in j:
 					# we don't use all the data from the json file
 					# we sanatize this data also - just in case (Oh, yes. Little Bobby Tables, we call him)
-					station_name = str(s['name']).replace('/','_').replace('.','_')
+					station_name = str(s['name']).replace('/','_').replace('.','_').replace(':','_')
 					user_id = int(s['userId'])
 					lnglat = LongLat(float(s['location'][1]), float(s['location'][0]))
 					stations[station_name] = Station(station_name, user_id, lnglat)
 			# Success!
 			self._stations = stations
 
-		except Exception as e:
+		except IOError as e:
 			print("%s: %s - CONTINUE ANYWAY" % (stations_filename, e), file=sys.stderr)
 
 	def _fetch_packets_from_tinygs(self, station):
@@ -260,37 +263,14 @@ class PacketFileProcessing:
 		# Filenames on Windows can't have :'s (colons) so keep this simple!
 		filename = now.strftime('%Y-%m-%dT%H-%M-00') + '.packets.json'
 		packets_filename = PacketFileProcessing.DATA_DIRECTORY + '/' + station.name + '/' + filename
-
-		self._api_call(packets_filename, station)
+		self._networking.packets(packets_filename, station)
 
 		# we return a list just in case one day we fetch many files
 		return [filename]
 
-	def _api_call(self, filename, station):
+	def _fetch_tle(self):
+		""" fetch_tle """
 
-		if station == None:
-			# the stations file (i.e. we don't know the staion)
-			url = PacketFileProcessing.URL_API_STATIONS
-			headers = headers=PacketFileProcessing.HEADERS
-		else:
-			# the packets file
-			url = PacketFileProcessing.URL_API_PACKETS + '?station=' + station.name + '@' + str(station.user_id)
-			headers = PacketFileProcessing.HEADERS.copy()
-			headers['Referer'] = 'https://tinygs.com/station/' + station.name + '@' + str(station.user_id)
-
-		if self._verbose:
-			print("%s: downloading from %s" % (filename, url), file=sys.stderr)
-
-		try:
-			r = requests.get(url, headers=headers, allow_redirects=True)
-			r.raise_for_status()
-			try:
-				# save away data - this is byte for byte from the web - no encoding needed
-				with open(filename, 'wb') as fd:
-					fd.write(r.content)
-			except Exception as e:
-				print("%s: %s - CONTINUE ANYWAY" % (filename, e), file=sys.stderr)
-		except Exception as e:
-			print("%s: %s - CONTINUE ANYWAY" % (full_path_url, e), file=sys.stderr)
-
+		tle_filename = PacketFileProcessing.DATA_DIRECTORY + '/' + 'tinygs_supported.txt'
+		self._networking.tle(tle_filename)
 
