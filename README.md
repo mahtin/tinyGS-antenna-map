@@ -69,16 +69,24 @@ The first option is to save it away in a file for all the code to use.
 
 ### Storing your user-id
 
-Use your Telegram **TinyGS Personal Bot** channel to find your user-id.
-It's the passwordless login link you get with the `/weblogin` command.
+Your user-is can be found via various methods.
+
+Assuming you are logged into TinyGS, you can visit https://tinygs.com and click on the User Console icon and then look at the resulting station URL (it will be something like: https://tinygs.com/user/20000007).
+The same uswer-id number can be seen in the URL for the per-station page.
+
+![user-id](/doc/images/webbrowser-tinygs-user-console.png?raw=true "user-id")
+
+Or, you can use your Telegram **TinyGS Personal Bot** channel to find your user-id.
+It's the last number from the passwordless login link you get with the `/weblogin` command.
 
 ![user-id](/doc/images/telegram-tinygs-personal-bot-weblogin.png?raw=true "user-id")
 
 The user-id is the URL provided (see example image).
-Use it to create a `.user_id` file via the following command:
+
+Copy the number seens and use it to create a `.user_id` file via the following command:
 
 ```bash
-$ echo '20000009' > .user_id
+$ echo '20000007' > .user_id
 $
 ```
 
@@ -131,10 +139,10 @@ tinygs_antenna_map [-v|--verbose] [-h|--help] [-r|--refresh] [-s|--station[,stat
 
 ### Specifying the station or user-id
 
-To produce a plot for a specific user (for example `20000009`):
+To produce a plot for a specific user (for example `20000007`):
 
 ```bash
-$ ./tinygs_antenna_map.py -u 20000009
+$ ./tinygs_antenna_map.py -u 20000007
 ```
 
 Your number will be different.
