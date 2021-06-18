@@ -11,9 +11,9 @@ import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 import matplotlib.colors as colors
 
-from structures import AzEl
-
 class PolarAntennaMap:
+	""" PolarAntennaMap """
+
 	theta_scale = 22.5			# Azimuth
 	radius_scale = 10.0			# Elevation
 
@@ -35,7 +35,7 @@ class PolarAntennaMap:
 			self._packets[station_name] = {}
 			self._buckets[station_name] = {}
 
-		if packets == None or len(packets) == 0:
+		if packets is None or len(packets) == 0:
 			return
 
 		for p in packets:
@@ -57,12 +57,16 @@ class PolarAntennaMap:
 					self._buckets[station_name][k] = 1
 
 	def display(self):
+		""" display """
+
 		if not self._processed:
 			self._process()
 			self._processed = True
 		plt.show()
 
 	def output(self, fd, file_format='png'):
+		""" output """
+
 		if not self._processed:
 			self._process()
 			self._processed = True
