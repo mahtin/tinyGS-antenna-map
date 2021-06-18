@@ -71,8 +71,8 @@ The first option is to save it away in a file for all the code to use.
 
 Your user-is can be found via various methods.
 
-Assuming you are logged into TinyGS, you can visit https://tinygs.com and click on the User Console icon and then look at the resulting station URL (it will be something like: https://tinygs.com/user/20000007).
-The same uswer-id number can be seen in the URL for the per-station page.
+Assuming you are logged into TinyGS, you can visit https://tinygs.com and click on the User Console icon and then look at the resulting station URL (it will be something like: `https://tinygs.com/user/20000007`).
+The same user-id number can be seen in the URL for the per-station page.
 
 ![user-id](/doc/images/webbrowser-tinygs-user-console.png?raw=true "user-id")
 
