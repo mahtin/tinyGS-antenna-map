@@ -61,8 +61,8 @@ class Satellite:
 
 		try:
 			s = Satellite._tle[satellite_name]
-		except:
-			raise IndexError
+		except IndexError as e:
+			raise IndexError from e
 		if not s:
 			raise NotImplementedError
 		self._satellite_name = satellite_name
