@@ -58,8 +58,7 @@ def tinygs_antenna_map(args):
 		try:
 			with open('.user_id', 'r') as f:
 				user_id = f.read().strip()
-		except FileNotFoundError as e:
-			#sys.exit('%s: %s' % ('tinygs_antenna_map', e))
+		except FileNotFoundError:
 			user_id = None
 
 	if refresh_data:
@@ -74,7 +73,7 @@ def tinygs_antenna_map(args):
 	except ValueError:
 		sys.exit('%s: user-id provided is non numeric' % ('tinygs_antenna_map'))
 
-	if user_id == None and (station_names == None or len(station_names) == 0):
+	if user_id is None and (station_names is None or len(station_names) == 0):
 		sys.exit('%s: No station or user-id provided' % ('tinygs_antenna_map'))
 
 	pfp = PacketFileProcessing(user_id, verbose)
