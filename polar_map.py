@@ -26,6 +26,9 @@ class PolarAntennaMap:
 		self._packets = {}
 		self._buckets = {}
 		self._processed = False
+		self._fig = None
+		self._axs = None
+		self._cmap = None
 
 	def add_packets(self, station_name, packets=None):
 		""" add_packets """
@@ -205,11 +208,13 @@ class PolarAntennaMap:
 		# self._axs[n].tick_params(grid_color='gray', labelcolor='gray')
 		# self._axs[n].legend(loc='lower right', bbox_to_anchor=(1.2, 0.94), prop={'size': 6})
 
-	def _degrees_to_radians(self, angle):
+	@classmethod
+	def _degrees_to_radians(cls, angle):
 		""" I think in degress - even if computers think in radians """
 		return (math.pi / 180.0) * angle
 
-	def _map_el(self, el):
+	@classmethod
+	def _map_el(cls, el):
 		""" map elevation - need 90 at the center of the graph """
 		return 90.0 - el
 

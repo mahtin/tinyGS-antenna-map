@@ -77,7 +77,7 @@ class Networking:
 		headers = Networking._HTTP_HEADERS
 		self._api_call(url, headers, filename)
 
-	def _api_call(self, url, headers, filename, station=None):
+	def _api_call(self, url, headers, filename):
 		""" _api_call """
 
 		if self._verbose:

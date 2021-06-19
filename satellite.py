@@ -11,7 +11,6 @@
 	lnglat, elevation, azel = sat.get_where()
 """
 
-import sys
 import math
 import datetime
 
@@ -92,17 +91,20 @@ class Satellite:
 		azel = AzEl(self._radians_to_degrees(self._tle_rec.az), self._radians_to_degrees(self._tle_rec.alt))
 		return [lnglat, elevation, azel]
 
-	def _radians_to_degrees(self, d):
+	@classmethod
+	def _radians_to_degrees(cls, d):
 		""" I think in degress - even if computers think in radians """
 
 		return d * (180/math.pi)
 
-	def _degrees_to_radians(self, a):
+	@classmethod
+	def _degrees_to_radians(cls, a):
 		""" I think in degress - even if computers think in radians """
 
 		return a / (180/math.pi)
 
-	def _read_tle(self):
+	@classmethod
+	def _read_tle(cls):
 		""" read the TLE's in """
 
 		try:
@@ -121,6 +123,7 @@ class Satellite:
 					n = (n + 1) % 3
 
 		except FileNotFoundError as e:
+			# import sys
 			# print('%s: %s - WILL CONTINUE ANYWAY' % (Satellite._tle_filename, e), file=sys.stderr)
 			pass
 
