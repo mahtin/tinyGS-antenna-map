@@ -44,8 +44,7 @@ class PacketFileProcessing:
 		if self._stations is None:
 			self._fetch_stations_from_tinygs()
 		if self._stations is None:
-			print('%s: No list of station to work with - exiting!', file=sys.stderr)
-			sys.exit(1)
+			sys.exit('No list of station to work with - exiting!')
 
 		ranking = 0
 		for station_name in self._stations:
