@@ -58,7 +58,7 @@ class Networking:
 		# the stations file (i.e. we don't know the staion)
 		url = Networking._URL_API_STATIONS
 		headers = headers=Networking._HTTP_HEADERS
-		self._api_call(url, headers, filename)
+		return self._api_call(url, headers, filename)
 
 	def packets(self, filename, station):
 		""" packets """
@@ -67,7 +67,7 @@ class Networking:
 		url = Networking._URL_API_PACKETS + '?station=' + station.name + '@' + str(station.user_id)
 		headers = Networking._HTTP_HEADERS.copy()
 		headers['Referer'] = 'https://tinygs.com/station/' + station.name + '@' + str(station.user_id)
-		self._api_call(url, headers, filename)
+		return self._api_call(url, headers, filename)
 
 	def tle(self, filename):
 		""" tle """
@@ -75,7 +75,7 @@ class Networking:
 		# the tle file
 		url = Networking._URL_API_TLE
 		headers = Networking._HTTP_HEADERS
-		self._api_call(url, headers, filename)
+		return self._api_call(url, headers, filename)
 
 	def _api_call(self, url, headers, filename):
 		""" _api_call """
