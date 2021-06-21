@@ -149,7 +149,7 @@ class PolarAntennaMap:
 			# color
 			shades.append(self._cmap(v/v_max))
 
-		self._axs[n].bar(theta, radii, bottom=bottom, width=width, color=shades, alpha=0.9, label=station_name, linewidth=0.25)
+		self._axs[n].bar(theta, radii, bottom=bottom, width=width, color=shades, alpha=0.9, label=station_name, linewidth=0.25, zorder=1)
 
 		# build the actual plot - packet dots
 		theta = []
@@ -169,10 +169,10 @@ class PolarAntennaMap:
 				shades.append('red')
 
 		# Packet dots are black/red with no alpha
-		self._axs[n].scatter(theta, radii, color=shades, alpha=0.9, label=station_name, linewidth=0.0)
+		self._axs[n].scatter(theta, radii, color=shades, alpha=0.5, label=station_name, linewidth=0.0, zorder=2)
 
 		if station_name in self._antenna_direction:
-			self._axs[n].arrow(self._degrees_to_radians(self._antenna_direction[station_name]), self._map_el(90), 0.0, 87, head_width=0.05, head_length=5, fill=False, length_includes_head=True, linewidth=1, color='blue')
+			self._axs[n].arrow(self._degrees_to_radians(self._antenna_direction[station_name]), self._map_el(90), 0.0, 87, head_width=0.05, head_length=5, fill=False, length_includes_head=True, linewidth=1, color='blue', zorder=3)
 
 		# all the misc stuff - for both 'bars'
 		self._axs[n].set_theta_offset(self._degrees_to_radians(90))
