@@ -155,6 +155,8 @@ class PolarAntennaMap:
 		theta = []
 		radii = []
 		shades = []
+		sizes = []
+		alphas = []
 
 		for k in self._packets[station_name]:
 			az = self._packets[station_name][k].azel.az
@@ -164,12 +166,16 @@ class PolarAntennaMap:
 			radii.append(self._map_el(el))
 			if self._packets[station_name][k].parsed:
 				shades.append('black')
+				sizes.append(4.0)
+				alphas.append(1.0)
 			else:
 				# Red dots for un-parsed packets
 				shades.append('red')
+				sizes.append(2.0)
+				alphas.append(0.7)
 
 		# Packet dots are black/red with no alpha
-		self._axs[n].scatter(theta, radii, color=shades, alpha=0.5, label=station_name, linewidth=0.0, zorder=2)
+		self._axs[n].scatter(theta, radii, color=shades, s=sizes, alpha=alphas, label=station_name, linewidth=0.0, zorder=2)
 
 		if station_name in self._antenna_direction:
 			self._axs[n].arrow(self._degrees_to_radians(self._antenna_direction[station_name]), self._map_el(90), 0.0, 87, head_width=0.05, head_length=5, fill=False, length_includes_head=True, linewidth=1, color='blue', zorder=3)
