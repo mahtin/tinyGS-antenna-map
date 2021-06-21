@@ -13,6 +13,16 @@ import getopt
 from packets import PacketFileProcessing
 from polar_map import PolarAntennaMap
 
+def read_user_id():
+	""" read_user_id """
+
+	try:
+		with open('.user_id', 'r') as f:
+			user_id = f.read().strip()
+	except FileNotFoundError:
+		user_id = None
+	return user_id
+
 def tinygs_antenna_map(args):
 	""" tinygs_antenna_map provides all the command line processing """
 
@@ -20,7 +30,8 @@ def tinygs_antenna_map(args):
 	refresh_data = False
 	station_names = None
 	user_id = None
-	antenna_direction = None
+	antennas = {}
+	antenna_arg = None
 	output_flag = False
 
 	usage = ('usage: tinygs_antenna_map '
@@ -50,7 +61,7 @@ def tinygs_antenna_map(args):
 		elif opt in ('-u', '--user'):
 			user_id = arg
 		elif opt in ('-a', '--antenna'):
-			antenna_direction = arg
+			antenna_arg = arg
 		elif opt in ('-o', '--output'):
 			output_flag = True
 		else:
@@ -60,11 +71,7 @@ def tinygs_antenna_map(args):
 		sys.exit(usage)
 
 	if not user_id:
-		try:
-			with open('.user_id', 'r') as f:
-				user_id = f.read().strip()
-		except FileNotFoundError:
-			user_id = None
+		user_id = read_user_id()
 
 	try:
 		if user_id:
@@ -74,11 +81,18 @@ def tinygs_antenna_map(args):
 	except ValueError:
 		sys.exit('%s: user-id provided is non numeric' % ('tinygs_antenna_map'))
 
-	if antenna_direction:
-		try:
-			antenna_direction = float(antenna_direction)
-		except:
-			sys.exit('%s: antenna_direction provided is non numeric' % ('tinygs_antenna_map'))
+	if antenna_arg:
+		for antenna in antenna_arg.split(','):
+			if '@' in antenna:
+				antenna_direction, antenna_station_name = antenna.split('@', 1)
+			else:
+				antenna_direction = antenna
+				antenna_station_name = None
+			try:
+				antenna_direction = float(antenna_direction)
+			except ValueError:
+				sys.exit('%s: antenna direction provided is non numeric' % ('tinygs_antenna_map'))
+			antennas[antenna_station_name] = antenna_direction
 
 	if user_id is None and (station_names is None or len(station_names) == 0):
 		sys.exit('%s: No station or user-id provided' % ('tinygs_antenna_map'))
@@ -94,20 +108,31 @@ def tinygs_antenna_map(args):
 	else:
 		pfp.add_all_stations()
 
-	if len(pfp.list_stations()) == 0:
-			sys.exit('%s: No stations found' % ('tinygs_antenna_map'))
+	station_names = pfp.list_stations()
+	if len(station_names) == 0:
+		sys.exit('%s: No stations found' % ('tinygs_antenna_map'))
 
-	for station_name in pfp.list_stations():
+	for station_name in antennas:
+		if station_name is None:
+			continue
+		if station_name not in station_names:
+			sys.exit('%s: Antenna direction station not found' % ('tinygs_antenna_map'))
+
+	for station_name in station_names:
 		pfp.process_packets(station_name)
 		if verbose:
 			pfp.print_packets(station_name)
 
 	# Let the plot begin!
 	plot = PolarAntennaMap()
-	for station_name in pfp.list_stations():
+	for station_name in station_names:
 		packets = pfp.get_packets(station_name)
 		plot.add_packets(station_name, packets)
-		if antenna_direction:
+		if None in antennas:
+			antenna_direction = antennas[None]
+			plot.add_antenna(station_name, antenna_direction)
+		if station_name in antennas:
+			antenna_direction = antennas[station_name]
 			plot.add_antenna(station_name, antenna_direction)
 
 	if output_flag:
