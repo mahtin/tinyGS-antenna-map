@@ -14,7 +14,6 @@ import datetime
 
 from structures import AzEl, LongLat, Station, Packet
 from satellite import Satellite
-from polar_map import PolarAntennaMap
 from networking import Networking
 
 class PacketFileProcessing:
@@ -153,27 +152,6 @@ class PacketFileProcessing:
 					print('%s: %s @ %s' % (station_name, packet.satellite, packet.azel))
 				else:
 					print('%s: %s @ %s CRC-ERROR' % (station_name, packet.satellite, packet.azel))
-
-	def file_packets(self, fd=sys.stdout.buffer, file_format='png'):
-		""" file_packets """
-
-		plot = self._plot_packets()
-		plot.output(fd, file_format)
-
-	def plot_packets(self):
-		""" plot_packets """
-		plot = self._plot_packets()
-		plot.display()
-
-	def _plot_packets(self):
-		""" _plot_packets """
-
-		if len(self._my_stations) == 0:
-			raise ValueError('Plot not available because no stations added')
-		plot = PolarAntennaMap()
-		for station_name in self._my_stations:
-			plot.add_packets(station_name, self._packets[station_name])
-		return plot
 
 	def _read_packets(self, station_name, packets):
 		""" _read_packets """
