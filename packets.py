@@ -22,6 +22,8 @@ class PacketFileProcessing:
 
 	DATA_DIRECTORY = 'data'
 
+	_tle_checked = False
+
 	def __init__(self, user_id=None, verbose=False):
 		""" PacketFileProcessing """
 
@@ -45,6 +47,13 @@ class PacketFileProcessing:
 			self._fetch_stations_from_tinygs()
 		if self._stations is None:
 			sys.exit('No list of station to work with - exiting!')
+
+		if not PacketFileProcessing._tle_checked:
+			# This helps the Satellite() code know about current TLEs
+			# The key point is to do this before we ever call Satellite()
+			# This isn't the best place to do this; however, we will survive!
+			self._fetch_tle()
+			PacketFileProcessing._tle_checked = True
 
 		ranking = 0
 		for station_name in self._stations:
@@ -218,23 +227,7 @@ class PacketFileProcessing:
 
 		stations_filename = PacketFileProcessing.DATA_DIRECTORY + '/' + 'stations.json'
 
-		file_update = False
-
-		try:
-			s = os.stat(stations_filename)
-		except FileNotFoundError:
-			# Let's assume the file does not exist
-			file_update = True
-
-		if not file_update:
-			if s.st_size == 0:
-				# Zero length files are bad - lets update it
-				file_update = True
-			if int(time.time() - s.st_mtime) > 5*24*3600:
-				# File is more than five days old - so lets not update it.
-				file_update = True
-
-		if file_update:
+		if self._is_file_old(stations_filename, 5*24*3600):
 			# Grab a fresh copy from the web (yes - I said "the web")
 			self._networking.stations(stations_filename)
 
@@ -271,5 +264,27 @@ class PacketFileProcessing:
 		""" fetch_tle """
 
 		tle_filename = PacketFileProcessing.DATA_DIRECTORY + '/' + 'tinygs_supported.txt'
-		self._networking.tle(tle_filename)
+		if self._is_file_old(tle_filename, 2*24*3600):
+			# Grab a fresh copy from the web (yes - I said "the web")
+			self._networking.tle(tle_filename)
+
+	@classmethod
+	def _is_file_old(cls, filename, age=1*24*3600):
+		""" is_file_old """
+
+		try:
+			s = os.stat(filename)
+			if s.st_size == 0:
+				# Zero length files are bad - lets update it
+				return True
+			if int(time.time() - s.st_mtime) > age:
+				# File is more than N days old - so update it.
+				return True
+
+		except FileNotFoundError:
+			# Let's assume the file does not exist
+			return True
+
+		# No need to update file
+		return False
 
