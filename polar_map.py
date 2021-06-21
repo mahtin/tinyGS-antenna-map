@@ -25,6 +25,7 @@ class PolarAntennaMap:
 		self._stations = []
 		self._packets = {}
 		self._buckets = {}
+		self._antenna_direction = {}
 		self._processed = False
 		self._fig = None
 		self._axs = None
@@ -58,6 +59,11 @@ class PolarAntennaMap:
 					self._buckets[station_name][k] += 1
 				except KeyError:
 					self._buckets[station_name][k] = 1
+
+	def add_antenna(self, station_name, direction):
+		""" add_antenna """
+
+		self._antenna_direction[station_name] = float(direction)
 
 	def display(self):
 		""" display """
@@ -147,19 +153,15 @@ class PolarAntennaMap:
 
 		# build the actual plot - packet dots
 		theta = []
-		bottom = []
 		radii = []
-		width = []
 		shades = []
 
 		for k in self._packets[station_name]:
 			az = self._packets[station_name][k].azel.az
 			el = self._packets[station_name][k].azel.el
 
-			theta.append(self._degrees_to_radians(az - self.dot_size/2.0))
-			bottom.append(self._map_el(el) - self.dot_size/2.0)
-			radii.append(self.dot_size)
-			width.append(self._degrees_to_radians(self.dot_size))
+			theta.append(self._degrees_to_radians(az))
+			radii.append(self._map_el(el))
 			if self._packets[station_name][k].parsed:
 				shades.append('black')
 			else:
@@ -167,7 +169,10 @@ class PolarAntennaMap:
 				shades.append('red')
 
 		# Packet dots are black/red with no alpha
-		self._axs[n].bar(theta, radii, bottom=bottom, width=width, color=shades, alpha=1.0, label=station_name, linewidth=0.0)
+		self._axs[n].scatter(theta, radii, color=shades, alpha=0.9, label=station_name, linewidth=0.0)
+
+		if station_name in self._antenna_direction:
+			self._axs[n].arrow(self._degrees_to_radians(self._antenna_direction[station_name]), self._map_el(90), 0.0, 87, head_width=0.05, head_length=5, fill=False, length_includes_head=True, linewidth=1, color='blue')
 
 		# all the misc stuff - for both 'bars'
 		self._axs[n].set_theta_offset(self._degrees_to_radians(90))
@@ -192,11 +197,11 @@ class PolarAntennaMap:
 		v_min = 0
 		if v_max == 0:
 			v_max =  v_min + 1
-		if v_max - v_min <= 10:
+		if (v_max - v_min) <= 10:
 			ticks = range(v_min,v_max+1)
 		else:
-			if ((v_max - v_max+1) % 2) == 0:
-				ticks = range(v_min,v_max+1, 2)
+			if ((v_max - v_min) % 4) == 0:
+				ticks = range(v_min,v_max+1, 4)
 			else:
 				ticks = [v_min, v_max]
 
