@@ -23,16 +23,21 @@ class PacketFileProcessing:
 
 	_tle_checked = False
 
-	def __init__(self, user_id=None, verbose=False):
+	def __init__(self, verbose=False):
 		""" PacketFileProcessing """
 
-		self._user_id = user_id
+		self._user_id = None
 		self._stations = None
 		self._my_stations = {}
 		self._sat = {}
 		self._packets = {}
 		self._networking = Networking()
 		self._verbose = verbose
+
+	def add_userid(self, user_id=None):
+		""" add_userid """
+
+		self._user_id = user_id
 
 	def add_station(self, station_name):
 		""" add_station """
