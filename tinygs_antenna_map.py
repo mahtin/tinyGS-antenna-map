@@ -11,6 +11,7 @@ import sys
 import getopt
 
 from packets import PacketFileProcessing
+from polar_map import PolarAntennaMap
 
 def tinygs_antenna_map(args):
 	""" tinygs_antenna_map provides all the command line processing """
@@ -19,19 +20,21 @@ def tinygs_antenna_map(args):
 	refresh_data = False
 	station_names = None
 	user_id = None
+	antenna_direction = None
 	output_flag = False
 
 	usage = ('usage: tinygs_antenna_map '
 			+ '[-v|--verbose] '
 			+ '[-h|--help] '
 			+ '[-r|--refresh] '
-			+ '[-s|--station[,station...]] '
-			+ '[-u|--user] user-id]'
+			+ '[[-s|--station] station[,station...]] '
+			+ '[[-u|--user] user-id] '
+			+ '[[-a|--antenna] degrees] '
 			+ '[-o|--output]'
 			)
 
 	try:
-		opts, args = getopt.getopt(args, 'vhrs:u:o', ['verbose', 'help', 'refresh', 'station=', 'user=', 'output'])
+		opts, args = getopt.getopt(args, 'vhrs:u:a:o', ['verbose', 'help', 'refresh', 'station=', 'user=', 'antenna=', 'output'])
 	except getopt.GetoptError:
 		sys.exit(usage)
 
@@ -46,6 +49,8 @@ def tinygs_antenna_map(args):
 			station_names = arg
 		elif opt in ('-u', '--user'):
 			user_id = arg
+		elif opt in ('-a', '--antenna'):
+			antenna_direction = arg
 		elif opt in ('-o', '--output'):
 			output_flag = True
 		else:
@@ -73,6 +78,12 @@ def tinygs_antenna_map(args):
 	except ValueError:
 		sys.exit('%s: user-id provided is non numeric' % ('tinygs_antenna_map'))
 
+	if antenna_direction:
+		try:
+			antenna_direction = float(antenna_direction)
+		except:
+			sys.exit('%s: antenna_direction provided is non numeric' % ('tinygs_antenna_map'))
+
 	if user_id is None and (station_names is None or len(station_names) == 0):
 		sys.exit('%s: No station or user-id provided' % ('tinygs_antenna_map'))
 
@@ -88,18 +99,21 @@ def tinygs_antenna_map(args):
 
 	for station_name in pfp.list_stations():
 		pfp.process_packets(station_name)
-
-	if verbose:
-		for station_name in pfp.list_stations():
-			#packets = pfp.get_packets(station_name)
-			#for p in packets:
-			#	pass
+		if verbose:
 			pfp.print_packets(station_name)
 
+	# Let the plot begin!
+	plot = PolarAntennaMap()
+	for station_name in pfp.list_stations():
+		packets = pfp.get_packets(station_name)
+		plot.add_packets(station_name, packets)
+		if antenna_direction:
+			plot.add_antenna(station_name, antenna_direction)
+
 	if output_flag:
-		pfp.file_packets()
+		plot.output(sys.stdout.buffer, 'png')
 	else:
-		pfp.plot_packets()
+		plot.display()
 	sys.exit(0)
 
 def main(args=None):
