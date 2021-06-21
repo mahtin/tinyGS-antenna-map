@@ -161,14 +161,44 @@ $ ./tinygs_antenna_map.py -s MALAONE -u 0
 
 (No idea who `MALAONE` is). Note the `-u 0` argument. This overtides your `.user_id` file if it exists (as this station is a different user).
 
-## Optional TLE data from tinyGS
+## Data refresh
 
-Should TinyGS support more satellites before this code syncs up with them, then the following could help:
+The program can be run many times; however it will only collect new data from TinyGS API no-and-again. This is to reduce the load on their servers.
 
+ * Packet data is updated at-best every twelve hours
+ * Station data is updated at-best every five days
+ * TLE data is updated at-best every two days
+
+Should you want to force a data refresh, then use the `-r` flag. Don't blame me if you get banned from the site.
+
+```bash
+$ ./tinygs_antenna_map.py -r
 ```
-$ curl -sSLR https://api.tinygs.com/v1/tinygs_supported.txt > data/tinygs_supported.txt
-$
+
+I don't recommend using that flag.
+
+# Adding antenna direction graphics to the plot(s)
+
+If you want to superimpose an antenna direction on the graphs; use the following examples: 
+
+An simple antenna direction for all ploted stations:
+
+```bash
+$ ./tinygs_antenna_map.py -a 220
 ```
 
-In fact, this file should be updated semi-often as the TLE's for the satellite do change over time. The code will still work if this file is missing.
+An antenna direction for a specific ploted station:
+
+```bash
+$ ./tinygs_antenna_map.py -a 35@W6LHI_433Mhz
+```
+
+
+An antenna direction for more than one ploted station:
+
+```bash
+$ ./tinygs_antenna_map.py -a 35@W6LHI_433Mhz,110@W6LHI_433Mhz_2
+```
+
+The numbers are in degress and the comma seperated list must contain valid station names.
 
