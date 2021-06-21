@@ -66,10 +66,6 @@ def tinygs_antenna_map(args):
 		except FileNotFoundError:
 			user_id = None
 
-	if refresh_data:
-		# refresh_data - XXX to do - use fetch.sh for now
-		pass
-
 	try:
 		if user_id:
 			user_id = int(user_id)
@@ -88,6 +84,8 @@ def tinygs_antenna_map(args):
 		sys.exit('%s: No station or user-id provided' % ('tinygs_antenna_map'))
 
 	pfp = PacketFileProcessing(verbose)
+	if refresh_data:
+		pfp.set_refresh(True)
 	if user_id:
 		pfp.add_userid(user_id)
 	if station_names:

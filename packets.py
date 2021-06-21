@@ -21,6 +21,10 @@ class PacketFileProcessing:
 
 	DATA_DIRECTORY = 'data'
 
+	REFRESH_TIME_PACKETS = 12*3600			# Every twelve hours for packets
+	REFRESH_TIME_STATIONS = 5*24*3600		# Every five days for stations
+	REFRESH_TIME_TLE = 2*24*3600			# Every two days for TLE data
+
 	_tle_checked = False
 
 	def __init__(self, verbose=False):
@@ -32,8 +36,13 @@ class PacketFileProcessing:
 		self._sat = {}
 		self._packets = {}
 		self._networking = Networking()
+		self._refresh = False
 		self._verbose = verbose
 
+	def set_refresh(self, refresh=True):
+		""" set_refresh """
+
+		self._refresh = refresh
 	def add_userid(self, user_id=None):
 		""" add_userid """
 
@@ -93,6 +102,8 @@ class PacketFileProcessing:
 		""" process_packets """
 
 		uniq_packets = {}
+
+		# process existing files - as a side effect, find the newest file
 		most_recent_mtime = 0
 		for _, _, files in os.walk(PacketFileProcessing.DATA_DIRECTORY + '/' + station_name):
 			for filename in files:
@@ -114,7 +125,9 @@ class PacketFileProcessing:
 				except IOError as e:
 					print("%s: %s - CONTINUE ANYWAY" % (packets_filename, e), file=sys.stderr)
 
-		if int(time.time() - most_recent_mtime) > 12*3600:
+		# check to see if we need to refresh the data files
+		if self._refresh or int(time.time() - most_recent_mtime) > PacketFileProcessing.REFRESH_TIME_PACKETS:
+			old_len = len(uniq_packets)
 			# We need fresh data!
 			station = self._stations[station_name]
 			filenames = self._fetch_packets_from_tinygs(station)
@@ -133,6 +146,9 @@ class PacketFileProcessing:
 						uniq_packets.update(p)
 				except IOError as e:
 					print("%s: %s - CONTINUE ANYWAY" % (packets_filename, e), file=sys.stderr)
+			if self._verbose:
+				if len(uniq_packets) - old_len > 0:
+					print('%s: Station refresh added %d packets' % (station.name, len(uniq_packets) - old_len), file=sys.stderr)
 
 		self._packets[station_name] = uniq_packets
 
@@ -210,7 +226,7 @@ class PacketFileProcessing:
 
 		stations_filename = PacketFileProcessing.DATA_DIRECTORY + '/' + 'stations.json'
 
-		if self._is_file_old(stations_filename, 5*24*3600):
+		if self._refresh or self._is_file_old(stations_filename, PacketFileProcessing.REFRESH_TIME_STATIONS):
 			# Grab a fresh copy from the web (yes - I said "the web")
 			self._networking.stations(stations_filename)
 
@@ -247,12 +263,12 @@ class PacketFileProcessing:
 		""" fetch_tle """
 
 		tle_filename = PacketFileProcessing.DATA_DIRECTORY + '/' + 'tinygs_supported.txt'
-		if self._is_file_old(tle_filename, 2*24*3600):
+		if self._refresh or self._is_file_old(tle_filename, PacketFileProcessing.REFRESH_TIME_TLE):
 			# Grab a fresh copy from the web (yes - I said "the web")
 			self._networking.tle(tle_filename)
 
 	@classmethod
-	def _is_file_old(cls, filename, age=1*24*3600):
+	def _is_file_old(cls, filename, age):
 		""" is_file_old """
 
 		try:
