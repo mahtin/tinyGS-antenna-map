@@ -18,10 +18,10 @@ import ephem
 
 from structures import AzEl, LongLat, TLE
 
-DATA_DIRECTORY = 'data'
-
 class Satellite:
 	""" Satellite """
+
+	DATA_DIRECTORY = 'data'
 
 	# A built-in limited TLE table; becuase, we don't need much to prove this code works
 	# Now read/updated in via data/tinygs_supported.txt file
@@ -40,8 +40,9 @@ class Satellite:
 
 		self._observer = None
 		self._satellite_name = None
-
 		self._tle_rec = None
+
+		# Only read the tle file once
 		if not Satellite._tle_updated:
 			self._read_tle()
 			Satellite._tle_updated = True
@@ -119,11 +120,20 @@ class Satellite:
 						line1 = l[1]
 						line2 = l[2]
 						norad = str(line1[2:7])		# https://www.celestrak.com/NORAD/documentation/tle-fmt.php
-						Satellite._tle[satellite_name] = TLE(norad, satellite_name, line1, line2)
+						epoch = str(line1[18:32])
+						if satellite_name in Satellite._tle:
+							existing_epoch = str(Satellite._tle[satellite_name].line1[18:32])
+						else:
+							existing_epoch = '00000000000000'
+						if epoch >= existing_epoch:
+							# Update our saved/compiled-in copy of the TLE's
+							Satellite._tle[satellite_name] = TLE(norad, satellite_name, line1, line2)
+						else:
+							# print('%s: %s < %s New epoch is not newer - WILL CONTINUE ANYWAY' % (satellite_name, existing_epoch, epoch), file=sys.stderr)
+							pass
 					n = (n + 1) % 3
 
 		except FileNotFoundError as e:
-			# import sys
 			# print('%s: %s - WILL CONTINUE ANYWAY' % (Satellite._tle_filename, e), file=sys.stderr)
 			pass
 
