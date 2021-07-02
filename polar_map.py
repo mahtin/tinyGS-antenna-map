@@ -7,6 +7,7 @@
 """
 
 import math
+import matplotlib
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 import matplotlib.colors as colors
@@ -175,6 +176,10 @@ class PolarAntennaMap:
 				alphas.append(0.7)
 
 		# Packet dots are black/red with no alpha
+		if matplotlib.__version__ < '3.4'
+			# This can be done by setting alpha value on colors ... a TODO
+			alphas = None
+
 		self._axs[n].scatter(theta, radii, color=shades, s=sizes, alpha=alphas, label=station_name, linewidth=0.0, zorder=2)
 
 		if station_name in self._antenna_direction:
