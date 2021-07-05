@@ -48,7 +48,9 @@ $
 
 ### Installing required packages (i.e Matplotlib)
 
-Please read and follow the [INSTALL-MATPLOTLIB](/INSTALL-MATPLOTLIB.md) page. Then return here after that is finished.
+For Linux etc, please read and follow the [INSTALL-MATPLOTLIB](/INSTALL-MATPLOTLIB.md) page. Then return here after that is finished.
+
+For Mac, please read and follow the [INSTALL-MATPLOTLIB-MAC](/INSTALL-MATPLOTLIB-MAC.md) page. Then return here after that is finished.
 
 ### Install continued
 
