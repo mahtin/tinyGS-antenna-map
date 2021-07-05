@@ -165,9 +165,9 @@ class PacketFileProcessing:
 			packet = uniq_packets[ident]
 			if self._verbose:
 				if packet.parsed:
-					print('%s\t%s\t%s\t%d:%s\t%-14s %5.1f ; %s' % (station_name, packet.ident, packet.dt.replace(microsecond=0).isoformat(), packet.norad, packet.satellite, packet.lnglat, packet.elevation, packet.azel), file=sys.stderr)
+					print('%s\t%s\t%s\t%5d:%s\t%16s %5.1f ; %16s' % (station_name, packet.ident, packet.dt.replace(microsecond=0).isoformat(), packet.norad, packet.satellite, packet.lnglat, packet.elevation, packet.azel), file=sys.stderr)
 				else:
-					print('%s\t%s\t%s\t%d:%s\t%-14s %5.1f ; %s CRC-ERROR' % (station_name, packet.ident, packet.dt.replace(microsecond=0).isoformat(), packet.norad, packet.satellite, packet.lnglat, packet.elevation, packet.azel), file=sys.stderr)
+					print('%s\t%s\t%s\t%5d:%s\t%16s %5.1f ; %16s CRC-ERROR' % (station_name, packet.ident, packet.dt.replace(microsecond=0).isoformat(), packet.norad, packet.satellite, packet.lnglat, packet.elevation, packet.azel), file=sys.stderr)
 			else:
 				if packet.parsed:
 					print('%s: %s @ %s' % (station_name, packet.satellite, packet.azel))
