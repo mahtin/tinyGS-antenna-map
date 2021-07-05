@@ -176,7 +176,7 @@ class PolarAntennaMap:
 				alphas.append(0.7)
 
 		# Packet dots are black/red with no alpha
-		if matplotlib.__version__ < '3.4'
+		if matplotlib.__version__ < '3.4':
 			# This can be done by setting alpha value on colors ... a TODO
 			alphas = None
 
