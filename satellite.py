@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+
 """
 	Satellite - a simple TLE process
 	Martin J Levy - W6LHI/G8LHI - https://github.com/mahtin/tinyGS-antenna-map
