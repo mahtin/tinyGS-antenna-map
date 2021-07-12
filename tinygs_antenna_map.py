@@ -31,6 +31,7 @@ def tinygs_antenna_map(args):
 	station_names = None
 	user_id = None
 	antennas = {}
+	max_days = None
 	antenna_arg = None
 	output_flag = False
 
@@ -41,11 +42,12 @@ def tinygs_antenna_map(args):
 			+ '[[-s|--station] station[,station...]] '
 			+ '[[-u|--user] user-id] '
 			+ '[[-a|--antenna] degrees] '
+			+ '[[-d|--days] days] '
 			+ '[-o|--output]'
 			)
 
 	try:
-		opts, args = getopt.getopt(args, 'vhrs:u:a:o', ['verbose', 'help', 'refresh', 'station=', 'user=', 'antenna=', 'output'])
+		opts, args = getopt.getopt(args, 'vhrs:u:a:d:o', ['verbose', 'help', 'refresh', 'station=', 'user=', 'antenna=', 'days=', 'output'])
 	except getopt.GetoptError:
 		sys.exit(usage)
 
@@ -62,6 +64,8 @@ def tinygs_antenna_map(args):
 			user_id = arg
 		elif opt in ('-a', '--antenna'):
 			antenna_arg = arg
+		elif opt in ('-d', '--days'):
+			max_days = arg
 		elif opt in ('-o', '--output'):
 			output_flag = True
 		else:
@@ -93,6 +97,16 @@ def tinygs_antenna_map(args):
 			except ValueError:
 				sys.exit('%s: antenna direction provided is non numeric' % ('tinygs_antenna_map'))
 			antennas[antenna_station_name] = antenna_direction
+
+	if max_days:
+		try:
+			max_days = int(max_days)
+		except ValueError:
+			sys.exit('%s: days provided is non numeric' % ('tinygs_antenna_map'))
+		if max_days <= 0:
+			sys.exit('%s: days provided is invalid number' % ('tinygs_antenna_map'))
+	else:
+		max_days = 365
 
 	if user_id is None and (station_names is None or len(station_names) == 0):
 		sys.exit('%s: No station or user-id provided' % ('tinygs_antenna_map'))
@@ -136,9 +150,9 @@ def tinygs_antenna_map(args):
 			plot.add_antenna(station_name, antenna_direction)
 
 	if output_flag:
-		plot.output(sys.stdout.buffer, 'png')
+		plot.output(sys.stdout.buffer, 'png', max_days=max_days)
 	else:
-		plot.display()
+		plot.display(max_days=max_days)
 	sys.exit(0)
 
 def main(args=None):
