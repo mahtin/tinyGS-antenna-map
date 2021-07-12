@@ -105,8 +105,6 @@ def tinygs_antenna_map(args):
 			sys.exit('%s: days provided is non numeric' % ('tinygs_antenna_map'))
 		if max_days <= 0:
 			sys.exit('%s: days provided is invalid number' % ('tinygs_antenna_map'))
-	else:
-		max_days = 365
 
 	if user_id is None and (station_names is None or len(station_names) == 0):
 		sys.exit('%s: No station or user-id provided' % ('tinygs_antenna_map'))
@@ -141,7 +139,7 @@ def tinygs_antenna_map(args):
 	plot = PolarAntennaMap()
 	for station_name in station_names:
 		packets = pfp.get_packets(station_name)
-		plot.add_packets(station_name, packets)
+		plot.add_packets(station_name, packets, max_days)
 		if None in antennas:
 			antenna_direction = antennas[None]
 			plot.add_antenna(station_name, antenna_direction)
@@ -150,9 +148,9 @@ def tinygs_antenna_map(args):
 			plot.add_antenna(station_name, antenna_direction)
 
 	if output_flag:
-		plot.output(sys.stdout.buffer, 'png', max_days=max_days)
+		plot.output(sys.stdout.buffer, 'png')
 	else:
-		plot.display(max_days=max_days)
+		plot.display()
 	sys.exit(0)
 
 def main(args=None):
