@@ -279,6 +279,7 @@ class PolarAntennaMap:
 		previous_y = {}
 		v_max = len(self._stations)
 		v = 0
+		y_max = 0
 		for station_name in sorted(self._stations):
 			for not_parsed in [0, 1]:
 				y_values = []
@@ -297,6 +298,8 @@ class PolarAntennaMap:
 
 					bottom_values.append(b_value)
 					y_values.append(y_value)
+					if (b_value + y_value) > y_max:
+						y_max = b_value + y_value
 
 				if not_parsed:
 					# crc errors etc
@@ -306,8 +309,22 @@ class PolarAntennaMap:
 					ax.bar(x_values, y_values, bottom=bottom_values, color = self._cmap((v+1)/(v_max+2)), label=station_name)
 			v += 1
 
+		if len(x_values) % 2 == 0:
+			ax.set_xticks(x_values[1::2])
+			ax.set_xticklabels(x_values[1::2])
+		else:
+			ax.set_xticks(x_values[::2])
+			ax.set_xticklabels(x_values[::2])
+
 		for tick in ax.get_xticklabels():
 			tick.set_rotation(-90)
+
+		if (y_max % 2) != 0:
+			ax.set_yticks([0, y_max])
+			ax.set_yticklabels([0, y_max])
+		else:
+			ax.set_yticks([0, int(y_max/2), y_max])
+			ax.set_yticklabels([0, int(y_max/2), y_max])
 
 		# ax.margins(0.05)
 		ax.set_xlabel('Date', fontdict={'fontsize':'medium'})
