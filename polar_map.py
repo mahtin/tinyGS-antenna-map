@@ -1,4 +1,4 @@
-#!/usr/local/bin/python
+
 """
 	Polar Antenna Map
 
@@ -7,6 +7,8 @@
 """
 
 import math
+import datetime
+
 import matplotlib
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
@@ -32,8 +34,10 @@ class PolarAntennaMap:
 		self._axs = None
 		self._cmap = None
 
-	def add_packets(self, station_name, packets=None):
+	def add_packets(self, station_name, packets=None, max_days=None):
 		""" add_packets """
+
+		now = datetime.datetime.utcnow()
 
 		if station_name not in self._packets:
 			self._stations.append(station_name)
@@ -47,6 +51,9 @@ class PolarAntennaMap:
 			packet = packets[p]
 			if packet.ident in self._packets[station_name]:
 				# seen already
+				continue
+			if max_days and (now - packet.dt) > datetime.timedelta(days=max_days):
+				# too old
 				continue
 			self._packets[station_name][packet.ident] = packet
 
@@ -93,7 +100,9 @@ class PolarAntennaMap:
 		self._cmap = plt.cm.OrRd
 
 		# N plots needed
-		self._fig, self._axs = plt.subplots(1, len(self._stations), sharex=False, sharey=False, subplot_kw=dict(projection='polar'))
+		self._fig, self._axs = plt.subplots(1+1, len(self._stations), sharex=False, sharey=False, subplot_kw=dict(projection='polar'))
+		# needed for 1+1
+		self._axs = self._axs[0]
 		if len(self._stations) == 1:
 			# Somewhere in the docs it says use squeeze - but that didn't work
 			self._axs = [self._axs]
@@ -106,8 +115,10 @@ class PolarAntennaMap:
 				if self._buckets[station_name][k] > v_max:
 					v_max = self._buckets[station_name][k]
 
-			self._plot(n, station_name, n_packets, v_max)
+			self._per_station_polar_plot(n, station_name, n_packets, v_max)
 			n += 1
+
+		self._per_day_bar_plot()
 
 		# This seems wrong - but I'm sticking with it for now
 		width_inches = 3
@@ -118,14 +129,14 @@ class PolarAntennaMap:
 		# https://github.com/matplotlib/matplotlib/issues/16550
 		# https://matplotlib.org/stable/tutorials/intermediate/tight_layout_guide.html
 		# using constrained_layout=True on subplots() above is even worse!
-		# self._fig.tight_layout()
+		self._fig.tight_layout()
 
 		title = ' '.join(sorted(self._stations))
 		# self._fig.canvas.set_window_title(title)
 		plt.get_current_fig_manager().set_window_title(title)
 
-	def _plot(self, n, station_name, n_packets, v_max):
-		""" _plot """
+	def _per_station_polar_plot(self, n, station_name, n_packets, v_max):
+		""" _per_station_polar_plot """
 
 		# build the actual plot - background color shading
 		theta = []
@@ -223,6 +234,107 @@ class PolarAntennaMap:
 
 		# self._axs[n].tick_params(grid_color='gray', labelcolor='gray')
 		# self._axs[n].legend(loc='lower right', bbox_to_anchor=(1.2, 0.94), prop={'size': 6})
+
+	def _per_day_bar_plot(self):
+		""" _per_day_bar_plot """
+
+		ax = plt.subplot(2,1,2, label='packets per day')
+
+		# find all the days we have data for
+		hist = {}
+		all_days = {}
+		for station_name in self._stations:
+			hist[station_name] = self._per_day_counts(station_name)
+			for day in hist[station_name].keys():
+				all_days[day] = True
+
+
+		# find holes (i.e. missing days)
+		day_last = None
+		extra_all_days = {}
+		for day in sorted(all_days):
+			if not day_last:
+				day_last = day
+
+			delta = day - day_last
+			if delta.days > 1:
+				# add the missing days
+				for ii in range(delta.days-1,0,-1):
+					missing_day = day - datetime.timedelta(days=ii)
+					extra_all_days[missing_day] = True
+			day_last = day
+		all_days.update(extra_all_days)
+
+		# build x axis values
+		ii = 1
+		x_values = []
+		for day in sorted(all_days):
+			if day in extra_all_days:
+				x_values.append(u'\u200c' * ii)			# unique value - but blank!
+				ii += 1
+			else:
+				x_values.append(day.strftime('%m/%d'))
+
+		# plot
+		previous_y = {}
+		v_max = len(self._stations)
+		v = 0
+		for station_name in sorted(self._stations):
+			for not_parsed in [0, 1]:
+				y_values = []
+				bottom_values = []
+				for day in sorted(all_days):
+					if day in hist[station_name]:
+						y_value = hist[station_name][day][not_parsed]
+					else:
+						y_value = 0
+					if day in previous_y:
+						b_value = previous_y[day]
+						previous_y[day] += y_value
+					else:
+						b_value = 0
+						previous_y[day] = y_value
+
+					bottom_values.append(b_value)
+					y_values.append(y_value)
+
+				if not_parsed:
+					# crc errors etc
+					ax.bar(x_values, y_values, bottom=bottom_values, color = self._cmap((v+1)/(v_max+2)), label=station_name, hatch='/')
+				else:
+					# real packets
+					ax.bar(x_values, y_values, bottom=bottom_values, color = self._cmap((v+1)/(v_max+2)), label=station_name)
+			v += 1
+
+		for tick in ax.get_xticklabels():
+			tick.set_rotation(-90)
+
+		# ax.margins(0.05)
+		ax.set_xlabel('Date', fontdict={'fontsize':'medium'})
+		ax.set_ylabel('#Packets', fontdict={'fontsize':'medium'})
+		title = 'Packets per day (UTC)'
+		ax.set_title(title, pad=24.0, fontdict={'fontsize':'medium'})
+
+	def _per_day_counts(self, station_name):
+		""" _per_day_counts """
+		days = {}
+		for k in self._packets[station_name]:
+			packet = self._packets[station_name][k]
+			# round down to date (i.e. drop time)
+			# this is all done in UTC!
+			dt = packet.dt.date()
+			if dt in days:
+				if packet.parsed:
+					days[dt][0] += 1
+				else:
+					days[dt][1] += 1
+
+			else:
+				if packet.parsed:
+					days[dt] = [1, 0]
+				else:
+					days[dt] = [0, 1]
+		return days
 
 	@classmethod
 	def _degrees_to_radians(cls, angle):
