@@ -135,8 +135,11 @@ tinygs_antenna_map [-v|--verbose] [-h|--help] [-r|--refresh] [-s|--station[,stat
  * [-v|--verbose] - provide some information on each of the packets being processed/displayed.
  * [-h|--help] - this message.
  * [-r|--refresh] - presently unused; but will pull data from TinyGS site on demand.
- * [-s|--station[,station...]] - list the station or stations to plot. Use comma-seperated (i.e. A,B,C) for more than one station.
- * [-u|--user] user-id] - define the user-id vs using the `.user_id` file.
+ * [-s|--station station[,station...]] - list the station or stations to plot. Use comma-seperated (i.e. A,B,C) for more than one station.
+ * [-u|--user] user-id - define the user-id vs using the `.user_id` file.
+ * [-a|--antenna] degrees - add a pointer to the polar graph to show antenna direction. Can be numeric degrees or station:degrees format.
+ * [-d|--days] days - limit the plot to the last N days.
+ * [-t|--timebar] - add a time bar graph to the output.
  * [-o|--output] - produce a PNG file on stdout (use: `tinygs_antenna_map.py -o > diagram.png` for example`).
 
 ### Specifying the station or user-id
