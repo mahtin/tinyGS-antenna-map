@@ -22,7 +22,7 @@ class PolarAntennaMap:
 
 	dot_size = 1.0
 
-	def __init__(self):
+	def __init__(self, timebar_flag):
 		""" PolarAntennaMap """
 
 		self._stations = []
@@ -33,6 +33,7 @@ class PolarAntennaMap:
 		self._fig = None
 		self._axs = None
 		self._cmap = None
+		self._timebar_flag = timebar_flag
 
 	def add_packets(self, station_name, packets=None, max_days=None):
 		""" add_packets """
@@ -100,9 +101,13 @@ class PolarAntennaMap:
 		self._cmap = plt.cm.OrRd
 
 		# N plots needed
-		self._fig, self._axs = plt.subplots(1+1, len(self._stations), sharex=False, sharey=False, subplot_kw=dict(projection='polar'))
-		# needed for 1+1
-		self._axs = self._axs[0]
+		if self._timebar_flag:
+			self._fig, self._axs = plt.subplots(1+1, len(self._stations), sharex=False, sharey=False, subplot_kw=dict(projection='polar'))
+			# needed for 1+1
+			self._axs = self._axs[0]
+		else:
+			self._fig, self._axs = plt.subplots(1, len(self._stations), sharex=False, sharey=False, subplot_kw=dict(projection='polar'))
+
 		if len(self._stations) == 1:
 			# Somewhere in the docs it says use squeeze - but that didn't work
 			self._axs = [self._axs]
@@ -118,11 +123,17 @@ class PolarAntennaMap:
 			self._per_station_polar_plot(n, station_name, n_packets, v_max)
 			n += 1
 
-		self._per_day_bar_plot()
+		if self._timebar_flag:
+			self._per_day_bar_plot()
 
 		# This seems wrong - but I'm sticking with it for now
-		width_inches = 3
-		height_inches = 5
+		if self._timebar_flag:
+			width_inches = 3
+			height_inches = 8
+		else:
+			width_inches = 3
+			height_inches = 5
+
 		self._fig.set_size_inches(width_inches * len(self._stations), height_inches)
 
 		# XXX - this slows down Matplotlib a lot - need to find out how to not use it!
