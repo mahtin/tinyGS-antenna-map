@@ -140,6 +140,7 @@ tinygs_antenna_map [-v|--verbose] [-h|--help] [-r|--refresh] [-s|--station[,stat
  * [-a|--antenna] degrees - add a pointer to the polar graph to show antenna direction. Can be numeric degrees or station:degrees format.
  * [-d|--days] days - limit the plot to the last N days.
  * [-t|--timebar] - add a time bar graph to the output.
+ * [-S|--style] style - control aspects of the graph - B = bar, D = dot, A = axis, T = title, C = colorbar.
  * [-o|--output] - produce a PNG file on stdout (use: `tinygs_antenna_map.py -o > diagram.png` for example`).
 
 ### Specifying the station or user-id

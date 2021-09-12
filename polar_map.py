@@ -22,7 +22,7 @@ class PolarAntennaMap:
 
 	dot_size = 1.0
 
-	def __init__(self, timebar_flag):
+	def __init__(self, timebar_flag, style_flag=None):
 		""" PolarAntennaMap """
 
 		self._stations = []
@@ -34,6 +34,7 @@ class PolarAntennaMap:
 		self._axs = None
 		self._cmap = None
 		self._timebar_flag = timebar_flag
+		self._style_flag = style_flag
 
 	def add_packets(self, station_name, packets=None, max_days=None):
 		""" add_packets """
@@ -149,60 +150,62 @@ class PolarAntennaMap:
 	def _per_station_polar_plot(self, n, station_name, n_packets, v_max):
 		""" _per_station_polar_plot """
 
-		# build the actual plot - background color shading
-		theta = []
-		bottom = []
-		radii = []
-		width = []
-		shades = []
+		if not self._style_flag or 'B' in self._style_flag:
+			# build the actual plot - background color shading
+			theta = []
+			bottom = []
+			radii = []
+			width = []
+			shades = []
 
-		for k in self._buckets[station_name]:
-			az_bucket, el_bucket = k
+			for k in self._buckets[station_name]:
+				az_bucket, el_bucket = k
 
-			v = self._buckets[station_name][k]
+				v = self._buckets[station_name][k]
 
-			# angle
-			theta.append(self._degrees_to_radians(az_bucket + PolarAntennaMap.theta_scale/2.0))
-			width.append(self._degrees_to_radians(PolarAntennaMap.theta_scale))
+				# angle
+				theta.append(self._degrees_to_radians(az_bucket + PolarAntennaMap.theta_scale/2.0))
+				width.append(self._degrees_to_radians(PolarAntennaMap.theta_scale))
 
-			# radius (remember - it's reversed!)
-			bottom.append(self._map_el(el_bucket))
-			radii.append(-PolarAntennaMap.radius_scale)
+				# radius (remember - it's reversed!)
+				bottom.append(self._map_el(el_bucket))
+				radii.append(-PolarAntennaMap.radius_scale)
 
-			# color
-			shades.append(self._cmap(v/v_max))
+				# color
+				shades.append(self._cmap(v/v_max))
 
-		self._axs[n].bar(theta, radii, bottom=bottom, width=width, color=shades, alpha=0.9, label=station_name, linewidth=0.25, zorder=1)
+			self._axs[n].bar(theta, radii, bottom=bottom, width=width, color=shades, alpha=0.9, label=station_name, linewidth=0.25, zorder=1)
 
-		# build the actual plot - packet dots
-		theta = []
-		radii = []
-		shades = []
-		sizes = []
-		alphas = []
+		if not self._style_flag or 'D' in self._style_flag:
+			# build the actual plot - packet dots
+			theta = []
+			radii = []
+			shades = []
+			sizes = []
+			alphas = []
 
-		for k in self._packets[station_name]:
-			az = self._packets[station_name][k].azel.az
-			el = self._packets[station_name][k].azel.el
+			for k in self._packets[station_name]:
+				az = self._packets[station_name][k].azel.az
+				el = self._packets[station_name][k].azel.el
 
-			theta.append(self._degrees_to_radians(az))
-			radii.append(self._map_el(el))
-			if self._packets[station_name][k].parsed:
-				shades.append('black')
-				sizes.append(4.0)
-				alphas.append(1.0)
-			else:
-				# Red dots for un-parsed packets
-				shades.append('red')
-				sizes.append(2.0)
-				alphas.append(0.7)
+				theta.append(self._degrees_to_radians(az))
+				radii.append(self._map_el(el))
+				if self._packets[station_name][k].parsed:
+					shades.append('black')
+					sizes.append(4.0)
+					alphas.append(1.0)
+				else:
+					# Red dots for un-parsed packets
+					shades.append('red')
+					sizes.append(2.0)
+					alphas.append(0.7)
 
-		# Packet dots are black/red with no alpha
-		if matplotlib.__version__ < '3.4':
-			# This can be done by setting alpha value on colors ... a TODO
-			alphas = None
+			# Packet dots are black/red with no alpha
+			if matplotlib.__version__ < '3.4':
+				# This can be done by setting alpha value on colors ... a TODO
+				alphas = None
 
-		self._axs[n].scatter(theta, radii, color=shades, s=sizes, alpha=alphas, label=station_name, linewidth=0.0, zorder=2)
+			self._axs[n].scatter(theta, radii, color=shades, s=sizes, alpha=alphas, label=station_name, linewidth=0.0, zorder=2)
 
 		if station_name in self._antenna_direction:
 			self._axs[n].arrow(self._degrees_to_radians(self._antenna_direction[station_name]), self._map_el(90), 0.0, 87, head_width=0.05, head_length=5, fill=False, length_includes_head=True, linewidth=1, color='blue', zorder=3)
@@ -210,38 +213,47 @@ class PolarAntennaMap:
 		# all the misc stuff - for both 'bars'
 		self._axs[n].set_theta_offset(self._degrees_to_radians(90))
 		self._axs[n].set_theta_direction(-1)
-		self._axs[n].set_thetagrids(
-			(0.0, 22.5, 45.0, 67.5, 90.0, 112.5, 135.0, 157.5, 180.0, 202.5, 225.0, 247.5, 270.0, 292.5, 315.0, 337.5),
-			('N', '', 'NE', '', 'E', '', 'SE', '', 'S', '', 'SW', '', 'W', '', 'NW', ''),
-			fontsize='small')
 		self._axs[n].set_rlim(bottom=0.0, top=90.0, emit=False, auto=False)
-		self._axs[n].set_rgrids(
-			(self._map_el(90), self._map_el(80), self._map_el(70), self._map_el(60), self._map_el(50), self._map_el(40), self._map_el(30), self._map_el(20), self._map_el(10), self._map_el(0)),
-			('', '80', '', '60', '', '40', '', '20', '', ''),
-			angle=90.0,
-			fontsize='small')
+
+		if not self._style_flag or 'A' in self._style_flag:
+			# Axis text and grid lines
+			theta_angles = (0.0, 22.5, 45.0, 67.5, 90.0, 112.5, 135.0, 157.5, 180.0, 202.5, 225.0, 247.5, 270.0, 292.5, 315.0, 337.5)
+			theta_labels = ('N', '', 'NE', '', 'E', '', 'SE', '', 'S', '', 'SW', '', 'W', '', 'NW', '')
+			radius_angles = (self._map_el(90), self._map_el(80), self._map_el(70), self._map_el(60), self._map_el(50), self._map_el(40), self._map_el(30), self._map_el(20), self._map_el(10), self._map_el(0))
+			radius_lables = ('', '80', '', '60', '', '40', '', '20', '', '')
+		else:
+			# No Axis text; but still draw grid lines - hence angles
+			theta_angles = (0.0, 22.5, 45.0, 67.5, 90.0, 112.5, 135.0, 157.5, 180.0, 202.5, 225.0, 247.5, 270.0, 292.5, 315.0, 337.5)
+			theta_labels = ()
+			radius_angles = (self._map_el(90), self._map_el(80), self._map_el(70), self._map_el(60), self._map_el(50), self._map_el(40), self._map_el(30), self._map_el(20), self._map_el(10), self._map_el(0))
+			radius_lables = ()
+
+		self._axs[n].set_thetagrids(theta_angles, theta_labels, fontsize='small')
+		self._axs[n].set_rgrids(radius_angles, radius_lables, angle=90.0, fontsize='small')
 
 		# self._axs[n].set_xlabel('Direction/Azimuth')	# XXX doesn't work for polar
 		# self._axs[n].set_ylabel('Elevation')		# XXX doesn't work for polar
 
-		title = '%s\n%d Total Packets' % (station_name, n_packets)
-		self._axs[n].set_title(title, pad=24.0, fontdict={'fontsize':'medium'})
+		if not self._style_flag or 'T' in self._style_flag:
+			title = '%s\n%d Total Packets' % (station_name, n_packets)
+			self._axs[n].set_title(title, pad=24.0, fontdict={'fontsize':'medium'})
 
-		v_min = 0
-		if v_max == 0:
-			v_max =  v_min + 1
-		if (v_max - v_min) <= 10:
-			ticks = range(v_min,v_max+1)
-		else:
-			if ((v_max - v_min) % 4) == 0:
-				ticks = range(v_min,v_max+1, 4)
+		if not self._style_flag or 'C' in self._style_flag:
+			v_min = 0
+			if v_max == 0:
+				v_max =  v_min + 1
+			if (v_max - v_min) <= 10:
+				ticks = range(v_min,v_max+1)
 			else:
-				ticks = [v_min, v_max]
+				if ((v_max - v_min) % 4) == 0:
+					ticks = range(v_min,v_max+1, 4)
+				else:
+					ticks = [v_min, v_max]
 
-		v_cmap = cm.ScalarMappable(norm=colors.Normalize(vmin=v_min, vmax=v_max), cmap=self._cmap)
-		v_cmap.set_array([])	# Not needed in matplotlib version 3.4.2 (and above?); but safe to leave in
-		cbar = plt.colorbar(v_cmap, ax=self._axs[n], orientation='horizontal', ticks=ticks)
-		cbar.set_label('#Packets/Direction', fontdict={'fontsize':'medium'})
+			v_cmap = cm.ScalarMappable(norm=colors.Normalize(vmin=v_min, vmax=v_max), cmap=self._cmap)
+			v_cmap.set_array([])	# Not needed in matplotlib version 3.4.2 (and above?); but safe to leave in
+			cbar = plt.colorbar(v_cmap, ax=self._axs[n], orientation='horizontal', ticks=ticks)
+			cbar.set_label('#Packets/Direction', fontdict={'fontsize':'medium'})
 
 		# self._axs[n].tick_params(grid_color='gray', labelcolor='gray')
 		# self._axs[n].legend(loc='lower right', bbox_to_anchor=(1.2, 0.94), prop={'size': 6})

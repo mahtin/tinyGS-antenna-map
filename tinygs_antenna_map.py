@@ -34,6 +34,7 @@ def tinygs_antenna_map(args):
 	max_days = None
 	antenna_arg = None
 	timebar_flag = False
+	style_flag = None
 	output_flag = False
 
 	usage = ('usage: tinygs_antenna_map '
@@ -45,11 +46,12 @@ def tinygs_antenna_map(args):
 			+ '[[-a|--antenna] degrees] '
 			+ '[[-d|--days] days] '
 			+ '[-t|--timebar]'
+			+ '[[-S|--style] [BDATC]]'
 			+ '[-o|--output]'
 			)
 
 	try:
-		opts, args = getopt.getopt(args, 'vhrs:u:a:d:to', ['verbose', 'help', 'refresh', 'station=', 'user=', 'antenna=', 'days=', 'timebar',  'output'])
+		opts, args = getopt.getopt(args, 'vhrs:u:a:d:tS:o', ['verbose', 'help', 'refresh', 'station=', 'user=', 'antenna=', 'days=', 'timebar', 'style=', 'output'])
 	except getopt.GetoptError:
 		sys.exit(usage)
 
@@ -70,6 +72,8 @@ def tinygs_antenna_map(args):
 			max_days = arg
 		elif opt in ('-t', '--timebar'):
 			timebar_flag = True
+		elif opt in ('-S', '--style'):
+			style_flag = arg
 		elif opt in ('-o', '--output'):
 			output_flag = True
 		else:
@@ -140,7 +144,7 @@ def tinygs_antenna_map(args):
 			pfp.print_packets(station_name)
 
 	# Let the plot begin!
-	plot = PolarAntennaMap(timebar_flag)
+	plot = PolarAntennaMap(timebar_flag, style_flag=style_flag)
 	for station_name in station_names:
 		packets = pfp.get_packets(station_name)
 		plot.add_packets(station_name, packets, max_days)
