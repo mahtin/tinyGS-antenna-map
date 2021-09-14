@@ -51,7 +51,7 @@ class PacketFileProcessing:
 	def add_station(self, station_name):
 		""" add_station """
 
-		self.add_all_stations(match=station_name)
+		return self.add_all_stations(match=station_name)
 
 	def add_all_stations(self, match=None):
 		""" add_all_stations """
@@ -68,6 +68,7 @@ class PacketFileProcessing:
 			self._fetch_tle()
 			PacketFileProcessing._tle_checked = True
 
+		found = False
 		ranking = 0
 		for station_name in self._stations:
 			ranking += 1
@@ -89,9 +90,13 @@ class PacketFileProcessing:
 			self._my_stations[station.name] = station
 			self._sat[station.name] = Satellite()
 			self._sat[station.name].set_observer(station.lnglat, station.elevation)
+			found = True
 
 			if self._verbose:
 				print('%s: Station processed! (#%d out of %d)' % (station.name, ranking, len(self._stations)), file=sys.stderr)
+		if not found:
+			return False
+		return True
 
 	def list_stations(self):
 		""" list_stations """

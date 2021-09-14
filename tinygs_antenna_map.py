@@ -124,9 +124,10 @@ def tinygs_antenna_map(args):
 		pfp.add_userid(user_id)
 	if station_names:
 		for station_name in station_names.split(','):
-			pfp.add_station(station_name)
+			if not pfp.add_station(station_name):
+				print('%s: Station not found!' % (station_name), file=sys.stderr)
 	else:
-		pfp.add_all_stations()
+		_ = pfp.add_all_stations()
 
 	station_names = pfp.list_stations()
 	if len(station_names) == 0:
