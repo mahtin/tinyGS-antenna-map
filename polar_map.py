@@ -6,6 +6,7 @@
 	Copyright (C) 2021 @mahtin - https://github.com/mahtin/tinyGS-antenna-map/blob/main/LICENSE
 """
 
+import sys
 import math
 import datetime
 
@@ -174,7 +175,10 @@ class PolarAntennaMap:
 				# color
 				shades.append(self._cmap(v/v_max))
 
-			self._axs[n].bar(theta, radii, bottom=bottom, width=width, color=shades, alpha=0.9, label=station_name, linewidth=0.25, zorder=1)
+			try:
+				self._axs[n].bar(theta, radii, bottom=bottom, width=width, color=shades, alpha=0.9, label=station_name, linewidth=0.25, zorder=1)
+			except ValueError:
+				print('%s: Station data error - no plot data!' % (station_name), file=sys.stderr)
 
 		if not self._style_flag or 'D' in self._style_flag:
 			# build the actual plot - packet dots
@@ -205,7 +209,10 @@ class PolarAntennaMap:
 				# This can be done by setting alpha value on colors ... a TODO
 				alphas = None
 
-			self._axs[n].scatter(theta, radii, color=shades, s=sizes, alpha=alphas, label=station_name, linewidth=0.0, zorder=2)
+			try:
+				self._axs[n].scatter(theta, radii, color=shades, s=sizes, alpha=alphas, label=station_name, linewidth=0.0, zorder=2)
+			except ValueError:
+				print('%s: Station data error - no plot data!' % (station_name), file=sys.stderr)
 
 		if station_name in self._antenna_direction:
 			self._axs[n].arrow(self._degrees_to_radians(self._antenna_direction[station_name]), self._map_el(90), 0.0, 87, head_width=0.05, head_length=5, fill=False, length_includes_head=True, linewidth=1, color='blue', zorder=3)
@@ -252,8 +259,11 @@ class PolarAntennaMap:
 
 			v_cmap = cm.ScalarMappable(norm=colors.Normalize(vmin=v_min, vmax=v_max), cmap=self._cmap)
 			v_cmap.set_array([])	# Not needed in matplotlib version 3.4.2 (and above?); but safe to leave in
-			cbar = plt.colorbar(v_cmap, ax=self._axs[n], orientation='horizontal', ticks=ticks)
-			cbar.set_label('#Packets/Direction', fontdict={'fontsize':'medium'})
+			try:
+				cbar = plt.colorbar(v_cmap, ax=self._axs[n], orientation='horizontal', ticks=ticks)
+				cbar.set_label('#Packets/Direction', fontdict={'fontsize':'medium'})
+			except ValueError:
+				print('%s: Station data error - no plot data!' % (station_name), file=sys.stderr)
 
 		# self._axs[n].tick_params(grid_color='gray', labelcolor='gray')
 		# self._axs[n].legend(loc='lower right', bbox_to_anchor=(1.2, 0.94), prop={'size': 6})
