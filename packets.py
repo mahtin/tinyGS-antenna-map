@@ -192,6 +192,9 @@ class PacketFileProcessing:
 			norad = int(p['norad'])
 			satellite_name = str(p['satellite'])
 
+			if norad == 0:
+				norad = self._update_norad(satellite_name)
+
 			try:
 				lnglat = LongLat(float(p['satPos']['lng']), float(p['satPos']['lat']))
 				elevation = float(p['satPos']['alt'])
@@ -291,4 +294,12 @@ class PacketFileProcessing:
 
 		# No need to update file
 		return False
+
+	@classmethod
+	def _update_norad(cls, satellite_name):
+		""" _update_norad """
+
+		# data files are missing a norad number - so use built in TLE data
+
+		return Satellite().get_norad_from_name(satellite_name)
 
