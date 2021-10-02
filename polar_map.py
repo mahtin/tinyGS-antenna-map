@@ -23,7 +23,7 @@ class PolarAntennaMap:
 
 	dot_size = 1.0
 
-	def __init__(self, timebar_flag, style_flag=None):
+	def __init__(self, timebar_flag, bysatellite_flag, style_flag=None):
 		""" PolarAntennaMap """
 
 		self._stations = []
@@ -35,30 +35,39 @@ class PolarAntennaMap:
 		self._axs = None
 		self._cmap = None
 		self._timebar_flag = timebar_flag
+		self._bysatellite_flag = bysatellite_flag
 		self._style_flag = style_flag
 
 	def add_packets(self, station_name, packets=None, max_days=None):
 		""" add_packets """
 
-		now = datetime.datetime.utcnow()
-
-		if station_name not in self._packets:
-			self._stations.append(station_name)
-			self._packets[station_name] = {}
-			self._buckets[station_name] = {}
-
 		if packets is None or len(packets) == 0:
 			return
 
+		now = datetime.datetime.utcnow()
+
 		for p in packets:
 			packet = packets[p]
-			if packet.ident in self._packets[station_name]:
+
+			# we index by station_name or norad/satellite depending on flags
+			if self._bysatellite_flag:
+				packet_index = "%s (%s)" % (packet.satellite, packet.norad)
+			else:
+				packet_index = station_name
+
+			if packet_index not in self._packets:
+				self._stations.append(packet_index)
+				self._packets[packet_index] = {}
+				self._buckets[packet_index] = {}
+
+
+			if packet.ident in self._packets[packet_index]:
 				# seen already
 				continue
 			if max_days and (now - packet.dt) > datetime.timedelta(days=max_days):
 				# too old
 				continue
-			self._packets[station_name][packet.ident] = packet
+			self._packets[packet_index][packet.ident] = packet
 
 			az_bucket = math.floor(packet.azel.az/PolarAntennaMap.theta_scale) * PolarAntennaMap.theta_scale
 			el_bucket = math.floor(packet.azel.el/PolarAntennaMap.radius_scale) * PolarAntennaMap.radius_scale
@@ -67,9 +76,9 @@ class PolarAntennaMap:
 			if packet.parsed:
 				# only add to bucket if it's a parsed packet
 				try:
-					self._buckets[station_name][k] += 1
+					self._buckets[packet_index][k] += 1
 				except KeyError:
-					self._buckets[station_name][k] = 1
+					self._buckets[packet_index][k] = 1
 
 	def add_antenna(self, station_name, direction):
 		""" add_antenna """
@@ -115,14 +124,14 @@ class PolarAntennaMap:
 			self._axs = [self._axs]
 
 		n = 0
-		for station_name in sorted(self._stations):
-			n_packets = len(self._packets[station_name])
+		for packet_index in sorted(self._stations):
+			n_packets = len(self._packets[packet_index])
 			v_max = 0
-			for k in self._buckets[station_name]:
-				if self._buckets[station_name][k] > v_max:
-					v_max = self._buckets[station_name][k]
+			for k in self._buckets[packet_index]:
+				if self._buckets[packet_index][k] > v_max:
+					v_max = self._buckets[packet_index][k]
 
-			self._per_station_polar_plot(n, station_name, n_packets, v_max)
+			self._per_station_polar_plot(n, packet_index, n_packets, v_max)
 			n += 1
 
 		if self._timebar_flag:
@@ -148,7 +157,7 @@ class PolarAntennaMap:
 		# self._fig.canvas.set_window_title(title)
 		plt.get_current_fig_manager().set_window_title(title)
 
-	def _per_station_polar_plot(self, n, station_name, n_packets, v_max):
+	def _per_station_polar_plot(self, n, packet_index, n_packets, v_max):
 		""" _per_station_polar_plot """
 
 		if not self._style_flag or 'B' in self._style_flag:
@@ -159,10 +168,10 @@ class PolarAntennaMap:
 			width = []
 			shades = []
 
-			for k in self._buckets[station_name]:
+			for k in self._buckets[packet_index]:
 				az_bucket, el_bucket = k
 
-				v = self._buckets[station_name][k]
+				v = self._buckets[packet_index][k]
 
 				# angle
 				theta.append(self._degrees_to_radians(az_bucket + PolarAntennaMap.theta_scale/2.0))
@@ -176,9 +185,9 @@ class PolarAntennaMap:
 				shades.append(self._cmap(v/v_max))
 
 			try:
-				self._axs[n].bar(theta, radii, bottom=bottom, width=width, color=shades, alpha=0.9, label=station_name, linewidth=0.25, zorder=1)
+				self._axs[n].bar(theta, radii, bottom=bottom, width=width, color=shades, alpha=0.9, label=packet_index, linewidth=0.25, zorder=1)
 			except ValueError:
-				print('%s: Station data error - no plot data!' % (station_name), file=sys.stderr)
+				print('%s: Station data error - no plot data!' % (packet_index), file=sys.stderr)
 
 		if not self._style_flag or 'D' in self._style_flag:
 			# build the actual plot - packet dots
@@ -188,13 +197,13 @@ class PolarAntennaMap:
 			sizes = []
 			alphas = []
 
-			for k in self._packets[station_name]:
-				az = self._packets[station_name][k].azel.az
-				el = self._packets[station_name][k].azel.el
+			for k in self._packets[packet_index]:
+				az = self._packets[packet_index][k].azel.az
+				el = self._packets[packet_index][k].azel.el
 
 				theta.append(self._degrees_to_radians(az))
 				radii.append(self._map_el(el))
-				if self._packets[station_name][k].parsed:
+				if self._packets[packet_index][k].parsed:
 					shades.append('black')
 					sizes.append(4.0)
 					alphas.append(1.0)
@@ -210,12 +219,12 @@ class PolarAntennaMap:
 				alphas = None
 
 			try:
-				self._axs[n].scatter(theta, radii, color=shades, s=sizes, alpha=alphas, label=station_name, linewidth=0.0, zorder=2)
+				self._axs[n].scatter(theta, radii, color=shades, s=sizes, alpha=alphas, label=packet_index, linewidth=0.0, zorder=2)
 			except ValueError:
-				print('%s: Station data error - no plot data!' % (station_name), file=sys.stderr)
+				print('%s: Station data error - no plot data!' % (packet_index), file=sys.stderr)
 
-		if station_name in self._antenna_direction:
-			self._axs[n].arrow(self._degrees_to_radians(self._antenna_direction[station_name]), self._map_el(90), 0.0, 87, head_width=0.05, head_length=5, fill=False, length_includes_head=True, linewidth=1, color='blue', zorder=3)
+		if packet_index in self._antenna_direction:
+			self._axs[n].arrow(self._degrees_to_radians(self._antenna_direction[packet_index]), self._map_el(90), 0.0, 87, head_width=0.05, head_length=5, fill=False, length_includes_head=True, linewidth=1, color='blue', zorder=3)
 
 		# all the misc stuff - for both 'bars'
 		self._axs[n].set_theta_offset(self._degrees_to_radians(90))
@@ -242,7 +251,7 @@ class PolarAntennaMap:
 		# self._axs[n].set_ylabel('Elevation')		# XXX doesn't work for polar
 
 		if not self._style_flag or 'T' in self._style_flag:
-			title = '%s\n%d Total Packets' % (station_name, n_packets)
+			title = '%s\n%d Total Packets' % (packet_index, n_packets)
 			self._axs[n].set_title(title, pad=24.0, fontdict={'fontsize':'medium'})
 
 		if not self._style_flag or 'C' in self._style_flag:
@@ -263,7 +272,7 @@ class PolarAntennaMap:
 				cbar = plt.colorbar(v_cmap, ax=self._axs[n], orientation='horizontal', ticks=ticks)
 				cbar.set_label('#Packets/Direction', fontdict={'fontsize':'medium'})
 			except ValueError:
-				print('%s: Station data error - no plot data!' % (station_name), file=sys.stderr)
+				print('%s: Station data error - no plot data!' % (packet_index), file=sys.stderr)
 
 		# self._axs[n].tick_params(grid_color='gray', labelcolor='gray')
 		# self._axs[n].legend(loc='lower right', bbox_to_anchor=(1.2, 0.94), prop={'size': 6})
@@ -276,9 +285,9 @@ class PolarAntennaMap:
 		# find all the days we have data for
 		hist = {}
 		all_days = {}
-		for station_name in self._stations:
-			hist[station_name] = self._per_day_counts(station_name)
-			for day in hist[station_name].keys():
+		for packet_index in self._stations:
+			hist[packet_index] = self._per_day_counts(packet_index)
+			for day in hist[packet_index].keys():
 				all_days[day] = True
 
 
@@ -313,13 +322,13 @@ class PolarAntennaMap:
 		v_max = len(self._stations)
 		v = 0
 		y_max = 0
-		for station_name in sorted(self._stations):
+		for packet_index in sorted(self._stations):
 			for not_parsed in [0, 1]:
 				y_values = []
 				bottom_values = []
 				for day in sorted(all_days):
-					if day in hist[station_name]:
-						y_value = hist[station_name][day][not_parsed]
+					if day in hist[packet_index]:
+						y_value = hist[packet_index][day][not_parsed]
 					else:
 						y_value = 0
 					if day in previous_y:
@@ -336,10 +345,10 @@ class PolarAntennaMap:
 
 				if not_parsed:
 					# crc errors etc
-					ax.bar(x_values, y_values, bottom=bottom_values, color = self._cmap((v+1)/(v_max+2)), label=station_name, hatch='/')
+					ax.bar(x_values, y_values, bottom=bottom_values, color = self._cmap((v+1)/(v_max+2)), label=packet_index, hatch='/')
 				else:
 					# real packets
-					ax.bar(x_values, y_values, bottom=bottom_values, color = self._cmap((v+1)/(v_max+2)), label=station_name)
+					ax.bar(x_values, y_values, bottom=bottom_values, color = self._cmap((v+1)/(v_max+2)), label=packet_index)
 			v += 1
 
 		if len(x_values) % 2 == 0:
@@ -365,11 +374,11 @@ class PolarAntennaMap:
 		title = 'Packets per day (UTC)'
 		ax.set_title(title, pad=24.0, fontdict={'fontsize':'medium'})
 
-	def _per_day_counts(self, station_name):
+	def _per_day_counts(self, packet_index):
 		""" _per_day_counts """
 		days = {}
-		for k in self._packets[station_name]:
-			packet = self._packets[station_name][k]
+		for k in self._packets[packet_index]:
+			packet = self._packets[packet_index][k]
 			# round down to date (i.e. drop time)
 			# this is all done in UTC!
 			dt = packet.dt.date()

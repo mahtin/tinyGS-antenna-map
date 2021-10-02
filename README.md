@@ -140,6 +140,7 @@ tinygs_antenna_map [-v|--verbose] [-h|--help] [-r|--refresh] [-s|--station[,stat
  * [-a|--antenna] degrees - add a pointer to the polar graph to show antenna direction. Can be numeric degrees or station:degrees format.
  * [-d|--days] days - limit the plot to the last N days.
  * [-t|--timebar] - add a time bar graph to the output.
+ * [-b|--bird] - convert charts to per-satellite vs per-station
  * [-S|--style] style - control aspects of the graph - B = bar, D = dot, A = axis, T = title, C = colorbar.
  * [-o|--output] - produce a PNG file on stdout (use: `tinygs_antenna_map.py -o > diagram.png` for example`).
 
@@ -183,7 +184,15 @@ $ ./tinygs_antenna_map.py -r
 
 I don't recommend using that flag.
 
-# Adding antenna direction graphics to the plot(s)
+## Plotting on a per-satellite basis
+
+The `-b` or `--bird`` flag will produce a different graph showing reception for each satellite.
+
+![by-satellite](/doc/images/W6LHI-by-satellite.png?raw=true "by-satellite")
+
+Some satellites will not have any valid packets (this is very true for 915 Mhz stations presently)
+
+## Adding antenna direction graphics to the plot(s)
 
 If you want to superimpose an antenna direction on the graphs; use the following examples: 
 
@@ -199,7 +208,6 @@ An antenna direction for a specific ploted station:
 $ ./tinygs_antenna_map.py -a 35@W6LHI_433Mhz
 ```
 
-
 An antenna direction for more than one ploted station:
 
 ```bash
@@ -207,4 +215,5 @@ $ ./tinygs_antenna_map.py -a 35@W6LHI_433Mhz,110@W6LHI_433Mhz_2
 ```
 
 The numbers are in degress and the comma seperated list must contain valid station names.
+
 
