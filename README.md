@@ -168,7 +168,7 @@ $ ./tinygs_antenna_map.py -s MALAONE -u 0
 
 (No idea who `MALAONE` is). Note the `-u 0` argument. This overtides your `.user_id` file if it exists (as this station is a different user).
 
-## Data refresh
+### Data refresh
 
 The program can be run many times; however it will only collect new data from TinyGS API no-and-again. This is to reduce the load on their servers.
 
@@ -184,15 +184,23 @@ $ ./tinygs_antenna_map.py -r
 
 I don't recommend using that flag.
 
-## Plotting on a per-satellite basis
+### Plotting on a per-satellite basis
 
-The `-b` or `--bird`` flag will produce a different graph showing reception for each satellite.
+The `-b` or `--bird` flag will produce a different graph showing reception for each satellite.
 
 ![by-satellite](/doc/images/W6LHI-by-satellite.png?raw=true "by-satellite")
 
 Some satellites will not have any valid packets (this is very true for 915 Mhz stations presently)
 
-## Adding antenna direction graphics to the plot(s)
+### Plotting a timeline graph
+
+The `-t` flag will produce a timeline graph along with the per-station or per-satellite charts.
+
+![timeline-graph](/doc/images/W6LHI-timeline.png?raw=true "timeline-graph")
+
+The cross-hatched areas are packets marked as having an CRC error.
+
+### Adding antenna direction graphics to the plot(s)
 
 If you want to superimpose an antenna direction on the graphs; use the following examples: 
 
