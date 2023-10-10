@@ -168,6 +168,14 @@ $ ./tinygs_antenna_map.py -s MALAONE -u 0
 
 (No idea who `MALAONE` is). Note the `-u 0` argument. This overtides your `.user_id` file if it exists (as this station is a different user).
 
+The station name can be a regular expression. For example, you could use (note the quoted regular expression in bash - that's a thing worth learning:
+
+```bash
+$ ./tinygs_antenna_map.py -s "SM5RBJ*" -u 0
+```
+
+This would get you all seven (yes, seven!) TinyGS stations run by `SM5RBJ`. I.e.  `SM5RBJ_1`, `SM5RBJ_4`, `SM5RBJ_5`, `SM5RBJ_32U`, `SM5RBJ_400MHZ`, `SM5RBJ_915MHz`, and `SM5RBJ_Dual_Ant`.
+
 ### Data refresh
 
 The program can be run many times; however it will only collect new data from TinyGS API no-and-again. This is to reduce the load on their servers.
