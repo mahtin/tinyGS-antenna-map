@@ -10,7 +10,7 @@ import sys
 import math
 import datetime
 
-import matplotlib
+from matplotlib import __version__ as matplotlib__version__
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 import matplotlib.colors as colors
@@ -111,6 +111,13 @@ class PolarAntennaMap:
 		# https://matplotlib.org/stable/gallery/color/colormap_reference.html
 		self._cmap = plt.cm.OrRd
 
+		n_packets = 0
+		for packet_index in sorted(self._stations):
+                        n_packets += len(self._packets[packet_index])
+		if n_packets == 0:
+			print('Station(s) - no packets to plot (sorry)!', file=sys.stderr)
+			return
+
 		# N plots needed
 		if self._timebar_flag:
 			self._fig, self._axs = plt.subplots(1+1, len(self._stations), sharex=False, sharey=False, subplot_kw=dict(projection='polar'))
@@ -189,6 +196,8 @@ class PolarAntennaMap:
 			except ValueError:
 				print('%s: Station data error - no plot data!' % (packet_index), file=sys.stderr)
 
+		n_packets = 0
+		n_parsed = 0
 		if not self._style_flag or 'D' in self._style_flag:
 			# build the actual plot - packet dots
 			theta = []
@@ -207,14 +216,16 @@ class PolarAntennaMap:
 					shades.append('black')
 					sizes.append(4.0)
 					alphas.append(1.0)
+					n_parsed += 1
 				else:
 					# Red dots for un-parsed packets
 					shades.append('red')
 					sizes.append(2.0)
 					alphas.append(0.7)
+				n_packets += 1
 
 			# Packet dots are black/red with no alpha
-			if matplotlib.__version__ < '3.4':
+			if matplotlib__version__ < '3.4':
 				# This can be done by setting alpha value on colors ... a TODO
 				alphas = None
 
@@ -251,7 +262,7 @@ class PolarAntennaMap:
 		# self._axs[n].set_ylabel('Elevation')		# XXX doesn't work for polar
 
 		if not self._style_flag or 'T' in self._style_flag:
-			title = '%s\n%d Total Packets' % (packet_index, n_packets)
+			title = '%s\n%d/%d Total Packets' % (packet_index, n_parsed, n_packets)
 			self._axs[n].set_title(title, pad=24.0, fontdict={'fontsize':'medium'})
 
 		if not self._style_flag or 'C' in self._style_flag:
