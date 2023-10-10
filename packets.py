@@ -11,6 +11,7 @@ import sys
 import time
 import json
 import datetime
+import re
 
 from structures import AzEl, LongLat, Station, Packet
 from satellite import Satellite
@@ -43,6 +44,7 @@ class PacketFileProcessing:
 		""" set_refresh """
 
 		self._refresh = refresh
+
 	def add_userid(self, user_id=None):
 		""" add_userid """
 
@@ -68,6 +70,8 @@ class PacketFileProcessing:
 			self._fetch_tle()
 			PacketFileProcessing._tle_checked = True
 
+		if match:
+			m = re.compile(match)
 		found = False
 		ranking = 0
 		for station_name in self._stations:
@@ -75,7 +79,7 @@ class PacketFileProcessing:
 			station = self._stations[station_name]
 			if self._user_id and self._user_id != station.user_id:
 				continue
-			if match and station_name != match:
+			if match and not m.match(station_name) and not match == station_name:
 				continue
 
 			# does data for the station exist
@@ -128,7 +132,8 @@ class PacketFileProcessing:
 						if s.st_mtime > most_recent_mtime:
 							most_recent_mtime = s.st_mtime
 				except IOError as e:
-					print("%s: %s - CONTINUE ANYWAY" % (packets_filename, e), file=sys.stderr)
+					if self._verbose:
+						print("%s: %s - CONTINUE ANYWAY" % (packets_filename, "read failed"), file=sys.stderr)
 
 		# check to see if we need to refresh the data files
 		if self._refresh or int(time.time() - most_recent_mtime) > PacketFileProcessing.REFRESH_TIME_PACKETS:
@@ -150,7 +155,8 @@ class PacketFileProcessing:
 						# the uniquiness comes from using ident at the index; hence removing data with the same ident and hence date/time stamp
 						uniq_packets.update(p)
 				except IOError as e:
-					print("%s: %s - CONTINUE ANYWAY" % (packets_filename, e), file=sys.stderr)
+					if self._verbose:
+						print("%s: %s - CONTINUE ANYWAY" % (packets_filename, "read failed"), file=sys.stderr)
 			if self._verbose:
 				if len(uniq_packets) - old_len > 0:
 					print('%s: Station refresh added %d packets' % (station.name, len(uniq_packets) - old_len), file=sys.stderr)
@@ -253,7 +259,8 @@ class PacketFileProcessing:
 			self._stations = stations
 
 		except IOError as e:
-			print("%s: %s - CONTINUE ANYWAY" % (stations_filename, e), file=sys.stderr)
+			if self._verbose:
+				print("%s: %s - CONTINUE ANYWAY" % (stations_filename, "read failed"), file=sys.stderr)
 
 	def _fetch_packets_from_tinygs(self, station):
 		""" fetch_packets_from_tinygs """
