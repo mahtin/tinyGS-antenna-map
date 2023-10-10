@@ -94,10 +94,12 @@ class Networking:
 				with open(filename, 'wb') as fd:
 					fd.write(r.content)
 			except IOError as e:
-				print("%s: %s - CONTINUE ANYWAY" % (filename, e), file=sys.stderr)
+				if self._verbose:
+					print("%s: %s - CONTINUE ANYWAY" % (filename, "file write failed"), file=sys.stderr)
 				return False
 		except Exception as e:
-			print("%s: %s - CONTINUE ANYWAY" % (url, e), file=sys.stderr)
+			if self._verbose:
+				print("%s: %s - CONTINUE ANYWAY" % (url, "network fetch failed"), file=sys.stderr)
 			return False
 
 		return True
