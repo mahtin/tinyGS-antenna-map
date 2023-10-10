@@ -141,11 +141,10 @@ class Satellite:
 							# Update our saved/compiled-in copy of the TLE's
 							cls._tle[satellite_name] = TLE(norad, satellite_name, line1, line2)
 						else:
-							# print('%s: %s < %s New epoch is not newer - WILL CONTINUE ANYWAY' % (satellite_name, existing_epoch, epoch), file=sys.stderr)
+							# New epoch is not newer - just continue
 							pass
 					n = (n + 1) % 3
 
 		except FileNotFoundError as e:
-			# print('%s: %s - WILL CONTINUE ANYWAY' % (cls._tle_filename, e), file=sys.stderr)
 			pass
 
