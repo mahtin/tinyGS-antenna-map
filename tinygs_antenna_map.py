@@ -89,13 +89,14 @@ def tinygs_antenna_map(args):
 	if not user_id:
 		user_id = read_user_id()
 
-	try:
-		if user_id:
+	if user_id:
+		try:
 			user_id = int(user_id)
-		if user_id == '0':
+		except ValueError:
+			#sys.exit('%s: user-id provided is non numeric' % ('tinygs_antenna_map'))
+			pass
+		if user_id in [0, '0', '']:
 			user_id = None
-	except ValueError:
-		sys.exit('%s: user-id provided is non numeric' % ('tinygs_antenna_map'))
 
 	if antenna_arg:
 		for antenna in antenna_arg.split(','):

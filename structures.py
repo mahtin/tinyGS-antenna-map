@@ -39,7 +39,10 @@ class Station:
 
 	def __init__(self, name, user_id, lnglat, elevation=0.0):
 		self.name = str(name)
-		self.user_id = int(user_id)
+		try:
+			self.user_id = int(user_id)
+		except ValueError:
+			self.user_id = str(user_id)
 		self.lnglat = lnglat
 		self.elevation = float(elevation)
 

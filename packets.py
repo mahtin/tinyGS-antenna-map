@@ -252,7 +252,7 @@ class PacketFileProcessing:
 					# we don't use all the data from the json file
 					# we sanatize this data also - just in case (Oh, yes. Little Bobby Tables, we call him)
 					station_name = str(s['name']).replace('/','_').replace('.','_').replace(':','_')
-					user_id = int(s['userId'])
+					user_id = str(s['userId'])
 					lnglat = LongLat(float(s['location'][1]), float(s['location'][0]))
 					stations[station_name] = Station(station_name, user_id, lnglat)
 			# Success!
